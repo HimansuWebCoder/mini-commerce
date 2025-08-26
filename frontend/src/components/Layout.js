@@ -1,12 +1,12 @@
-import { Outlet } from "react-router";
-import Navigation from "./Navigation";
+import { Outlet } from 'react-router'
+import Navigation from './Navigation'
 function Layout() {
-	return (
-           <div >
-              <Navigation />
-           	  <Outlet/>
-           </div>
-		)
+   return (
+      <div>
+         <Navigation />
+         <Outlet />
+      </div>
+   )
 }
 
-export default Layout;
+export default Layout

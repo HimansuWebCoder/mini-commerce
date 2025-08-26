@@ -1,10 +1,8 @@
 function EditProduct() {
-  return (
-     <></>
-  	)
+  return <></>
 }
 
-export default EditProduct;
+export default EditProduct
 
 // delete image
 // const deleteImage = async () => {
@@ -30,7 +28,6 @@ export default EditProduct;
 //   const data = await res.json();
 //   console.log("Renamed:", data);
 // };
-
 
 // <button onClick={deleteImage}>Delete</button>
 // <button onClick={renameImage}>Rename</button>
