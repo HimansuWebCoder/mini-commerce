@@ -24,27 +24,47 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Box from '@mui/material/Box'
 
 import { useState, useEffect } from 'react'
+import { useContext } from 'react'
+import { ProductsContext } from '../../context/ProductsContext'
 
 function ProductCardContainer(props) {
+    const {
+        products,
+        setProducts,
+        editProductName,
+        setEditProductName,
+        editProductCategory,
+        setEditProductCategory,
+        editProductDescription,
+        setEditProductDescription,
+        editProductOriginalPrice,
+        setEditProductOriginalPrice,
+        editDiscount,
+        setEditDiscount,
+        editProductPrice,
+        setEditProductPrice,
+        editProductImg,
+        setEditProductImg,
+        isLoading,
+        setIsLoading,
+        loader,
+        setLoader,
+        imageFile,
+        setImageFile,
+        imageUrl,
+        setImageUrl,
+        imageFileShow,
+        setImageFileShow,
+        showModalId,
+        setIsShowModalId,
+        editProduct,
+        isHideHandler,
+    } = useContext(ProductsContext)
+
     const { loading = false } = props
 
-    const [products, setProducts] = useState([])
     const [subCategory, setSubCategory] = useState('')
-    const [showModalId, setIsShowModalId] = useState(null)
-    // Edit product States
-    const [editProductName, setEditProductName] = useState('')
-    const [editProductCategory, setEditProductCategory] = useState('')
-    const [editProductDescription, setEditProductDescription] = useState('')
-    const [editProductOriginalPrice, setEditProductOriginalPrice] = useState('')
-    const [editDiscount, setEditDiscount] = useState('')
-    const [editProductPrice, setEditProductPrice] = useState('')
-    const [editProductImg, setEditProductImg] = useState('')
-
-    const [loader, setLoader] = useState(false)
-
-    const [imageFile, setImageFile] = useState(null)
-    const [imageUrl, setImageUrl] = useState('')
-    const [imageFileShow, setImageFileShow] = useState(null)
+    // const [showModalId, setIsShowModalId] = useState(null)
 
     const handleFileChange = (e) => {
         setImageFile(e.target.files[0])
@@ -77,11 +97,6 @@ function ProductCardContainer(props) {
             })
     }
 
-    function isHideHandler() {
-        setIsShowModalId(null)
-        setImageFileShow('')
-    }
-
     // Delete Products
     function deleteProduct(id) {
         setLoader(true)
@@ -94,86 +109,6 @@ function ProductCardContainer(props) {
             .then(() => {
                 setLoader(false)
                 window.location.reload()
-            })
-    }
-
-    // Fetch products
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const products = await fetch('http://localhost:4000/products', {
-                    method: 'get',
-                    credentials: 'include',
-                })
-
-                const productsData = await products.json()
-                setProducts(productsData.newProducts)
-                console.log(
-                    'category name',
-                    productsData.newProducts[0].category.name,
-                )
-            } catch (err) {
-                console.error('Error fetching products:', err)
-            }
-        }
-
-        fetchProducts()
-    }, [])
-
-    // Edit Products
-    async function editProduct(id) {
-        setLoader(true)
-        const data = new FormData()
-        data.append('file', imageFile)
-        data.append('upload_preset', 'images')
-
-        const res = await fetch(
-            'https://api.cloudinary.com/v1_1/dtiasevyl/image/upload',
-            {
-                method: 'POST',
-                body: data,
-            },
-        )
-
-        const cloudData = await res.json()
-        // console.log("Cloudinary URL:", cloudData.secure_url);
-        setImageUrl(cloudData.secure_url)
-
-        fetch(`http://localhost:4000/products/${id}`, {
-            method: 'put',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                productName: editProductName,
-                productCategory: editProductCategory,
-                productImg: cloudData.secure_url,
-                productPrice: editProductPrice,
-                productOriginalPrice: editProductOriginalPrice,
-                discount: editDiscount,
-                productDescription: editProductDescription,
-            }),
-            credentials: 'include',
-        })
-            .then((res) => res.json())
-            .then(() => {
-                fetch('http://localhost:4000/products', {
-                    method: 'get',
-                    credentials: 'include',
-                })
-                    .then((res) => res.json())
-                    .then((data) => {
-                        setProducts(data.newProducts)
-                        setLoader(false)
-                        window.location.reload()
-                        setEditProductName('')
-                        setEditProductCategory('')
-                        setEditProductPrice('')
-                        setEditProductImg('')
-                        setEditProductDescription('')
-                        setEditProductOriginalPrice('')
-                        setEditDiscount('')
-                        setImageFile('')
-                        isHideHandler()
-                    })
             })
     }
 
@@ -524,9 +459,9 @@ ProductCardContainer.propTypes = {
 }
 
 function ProductCard() {
+    // const { isLoading, setIsLoading, setProducts } = useContext(ProductsContext)
     const [products, setProducts] = useState([])
     const [isLoading, setIsLoading] = useState(false)
-
     // Fetch products
     useEffect(() => {
         setIsLoading(true)
@@ -544,14 +479,17 @@ function ProductCard() {
                     const productsData = await products.json()
                     setIsLoading(false)
                     setProducts(productsData.newProducts)
-                    console.log('all Products', productsData.newProducts)
+                    // console.log(
+                    //     'category name',
+                    //     productsData.newProducts[0].category.name,
+                    // )
                 } catch (err) {
                     console.error('Error fetching products:', err)
                 }
             }
 
             fetchProducts()
-        }, 4000)
+        }, 3000)
     }, [])
 
     return (

@@ -35,7 +35,11 @@ function Navigation() {
             </div>
 
             <div className="rounded-lg p-2 border shadow-xl text-white cursor-pointer text-2xl font-opensans font-base">
-              <Link to="/categories">Category</Link>
+              <Link to="/category">Category</Link>
+            </div>
+
+            <div className="rounded-lg p-2 border shadow-xl text-white cursor-pointer text-2xl font-opensans font-base">
+              <Link to="/subcategory">Subcategory</Link>
             </div>
           </div>
 

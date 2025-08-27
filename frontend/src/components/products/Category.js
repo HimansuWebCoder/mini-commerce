@@ -5,19 +5,30 @@ import Modal from '../ui/Modal'
 import SubCategory from './SubCategory'
 import { Link } from 'react-router'
 import { Spin } from 'antd'
+import { Outlet } from 'react-router'
+
+import { useContext } from 'react'
+import { CategoryContext } from '../../context/CategoryContext'
 
 function Category() {
-    const [products, setProducts] = useState([])
-    const [categories, setCategories] = useState([])
+    const {
+        categories,
+        category,
+        setCategory,
+        addCategories,
+        isLoader,
+        setIsLoader,
+        isLoading,
+        setIsLoading,
+    } = useContext(CategoryContext)
+
+    // const [products, setProducts] = useState([])
     const [subCategories, setSubCategories] = useState([])
-    const [isLoader, setIsLoader] = useState(false)
     const [selectCategory, setSelectCategory] = useState('')
-    const [category, setCategory] = useState('')
     const [subCategory, setSubCategory] = useState('')
 
     // Category products filter States
-    const [product, setProduct] = useState([...products])
-    // const [ categories, setCategories ] = useState([]);
+    // const [product, setProduct] = useState([...products])
 
     const [filterProduct, setFilterProduct] = useState([])
 
@@ -40,99 +51,31 @@ function Category() {
     }
 
     // Fetch products
-    useEffect(() => {
-        setIsLoader(true)
-        setTimeout(() => {
-            const fetchProducts = async () => {
-                try {
-                    const products = await fetch(
-                        'http://localhost:4000/products',
-                        {
-                            method: 'get',
-                            credentials: 'include',
-                        },
-                    )
+    // useEffect(() => {
+    //     setIsLoader(true)
+    //     setTimeout(() => {
+    //         const fetchProducts = async () => {
+    //             try {
+    //                 const products = await fetch(
+    //                     'http://localhost:4000/products',
+    //                     {
+    //                         method: 'get',
+    //                         credentials: 'include',
+    //                     },
+    //                 )
 
-                    const productsData = await products.json()
-                    setIsLoader(false)
-                    setProducts(productsData.newProducts)
-                    console.log('all Products', productsData.newProducts)
-                } catch (err) {
-                    console.error('Error fetching products:', err)
-                }
-            }
+    //                 const productsData = await products.json()
+    //                 setIsLoader(false)
+    //                 setProducts(productsData.newProducts)
+    //                 console.log('all Products', productsData.newProducts)
+    //             } catch (err) {
+    //                 console.error('Error fetching products:', err)
+    //             }
+    //         }
 
-            fetchProducts()
-        }, 2000)
-    }, [])
-
-    // Post Categories
-    function addCategories() {
-        setIsLoader(true)
-        fetch('http://localhost:4000/categories', {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: category }),
-            credentials: 'include',
-        })
-            .then((res) => res.json())
-            .then(() => {
-                fetch('http://localhost:4000/categories', {
-                    method: 'get',
-                    credentials: 'include',
-                })
-                    .then((res) => res.json())
-                    .then((newProducts) => {
-                        setIsLoader(false)
-                        setCategories([...categories, category])
-                    })
-            })
-    }
-
-    // Post Sub-Categories
-    function addSubCategories() {
-        fetch('http://localhost:4000/subcategories', {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: subCategory }),
-            credentials: 'include',
-        })
-            .then((res) => res.json())
-            .then(() => {
-                fetch('http://localhost:4000/subcategories', {
-                    method: 'get',
-                    credentials: 'include',
-                })
-                    .then((res) => res.json())
-                    .then((newProducts) => {
-                        setSubCategories([...subCategories, subCategory])
-                    })
-            })
-    }
-
-    useEffect(() => {
-        setIsLoader(true)
-        setTimeout(() => {
-            const fetchCatgories = async () => {
-                const productCategory = await fetch(
-                    'http://localhost:4000/categories',
-                    {
-                        method: 'get',
-                        credentials: 'include',
-                    },
-                )
-
-                const categoryData = await productCategory.json()
-                setIsLoader(false)
-                setCategories(categoryData.categoriesData)
-                console.log('filter product', product)
-                // console.log("category products", product);
-                console.log('categorydata', categoryData.categoriesData)
-            }
-
-            fetchCatgories()
-        }, 1000)
-    }, [])
+    //         fetchProducts()
+    //     }, 2000)
+    // }, [])
 
     // Fetch sub categories
     useEffect(() => {
@@ -159,69 +102,89 @@ function Category() {
 
     return (
         <div className=" w-fit grid  grid-cols-1 gap-4 w-full h-full place-content-center place-items-center">
-            <div className="w-fit grid  shadow-lg grid-cols-3 w-full h-full p-4 place-content-center place-items-center">
-                <h1 className="font-poppins text-2xl text-[#44444E] w-full flex justify-start font-medium">
-                    Explore by Categories
-                </h1>
-                <div className="flex gap-4 items-center justify-start w-[45rem] [&::-webkit-scrollbar]:hidden  overflow-x-auto">
+            <div className="grid  shadow-lg grid-cols-1 w-full h-full p-4 gap-4 place-content-center place-items-center">
+                <div className="font-poppins text-2xl text-[#44444E] w-full flex justify-between items-center p-2 font-medium">
+                    <h1 className="font-poppins text-3xl text-[#44444E] flex justify-start font-medium">
+                        Explore by Categories
+                    </h1>
+                    <div className="flex gap-2 items-center justify-end">
+                        <button
+                            onClick={isShowModalHandler}
+                            className="flex font-base rounded-lg bg-[#EFEFEF] p-2 hover:text-white hover:bg-[#689B8A] font-poppins text-xl text-[#44444E] justify-center items-center"
+                        >
+                            <IoAddSharp size="20" className="" />
+                            Add category
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex w-full gap-4 items-center justify-start [&::-webkit-scrollbar]:hidden  overflow-x-auto">
                     {isLoader ? (
-                        <>
+                        <div className="w-full h-full grid grid-cols-4 gap-4">
                             <Skeleton
                                 variant="rounded"
-                                width={80}
-                                height={40}
+                                width={300}
+                                height={300}
                             />
                             <Skeleton
                                 variant="rounded"
-                                width={80}
-                                height={40}
+                                width={300}
+                                height={300}
                             />
                             <Skeleton
                                 variant="rounded"
-                                width={80}
-                                height={40}
+                                width={300}
+                                height={300}
                             />
                             <Skeleton
                                 variant="rounded"
-                                width={80}
-                                height={40}
+                                width={300}
+                                height={300}
                             />
                             <Skeleton
                                 variant="rounded"
-                                width={80}
-                                height={40}
+                                width={300}
+                                height={300}
                             />
                             <Skeleton
                                 variant="rounded"
-                                width={80}
-                                height={40}
+                                width={300}
+                                height={300}
                             />
-                        </>
+                            <Skeleton
+                                variant="rounded"
+                                width={300}
+                                height={300}
+                            />
+                        </div>
                     ) : (
-                        <>
+                        <div className="w-full h-full grid grid-cols-4 gap-4 p-4">
                             {categories.map((category) => (
-                                <div key={category._id}>
-                                    <button
+                                <div
+                                    className="flex rounded-lg justify-center  items-center"
+                                    key={category._id}
+                                >
+                                    <div
                                         onClick={(e) =>
                                             setSelectCategory(category.category)
                                         }
-                                        className="font-poppins hover:shadow-md focus:bg-[#EFEFEF]  hover:bg-[#EFEFEF] rounded-lg w-fit p-2 text-[#173B45] font-normal border"
+                                        className="font-poppins justify-center hover:bg-[#73C7C7] hover:text-white focus:bg-[#73C7C7] items-center gap-2 flex-col flex cursor-pointer hover:shadow-md  rounded-lg w-full h-full aspect-[1/1] p-2 font-normal shadow-lg"
                                     >
-                                        {category.name}
-                                    </button>
+                                        <div className="max-w-40  h-40">
+                                            <img
+                                                className="w-full h-full object-contain"
+                                                src="/images/shop.png"
+                                                alt="shop"
+                                            />
+                                        </div>
+                                        <h1 className="font-poppins  text-[#173B45] text-2xl font-normal">
+                                            {category.name}
+                                        </h1>
+                                    </div>
                                 </div>
                             ))}
-                        </>
+                        </div>
                     )}
-                </div>
-                <div className="flex gap-2 items-center justify-end w-full">
-                    <button
-                        onClick={isShowModalHandler}
-                        className="flex font-base rounded-lg bg-[#EFEFEF] p-2 hover:text-white border hover:bg-[#689B8A] font-poppins text-xl text-[#44444E] justify-center items-center"
-                    >
-                        <IoAddSharp size="20" className="" />
-                        Add category
-                    </button>
                 </div>
 
                 <Modal
@@ -244,7 +207,7 @@ function Category() {
                             />
                             {/*<div className="w-full border flex justify-end items-center">*/}
                             <div className="w-full grid grid-cols-1 place-content-center place-items-end">
-                                {isLoader ? (
+                                {isLoading ? (
                                     <div className="flex justify-center items-center gap-2">
                                         <button
                                             onClick={addCategories}
@@ -333,7 +296,8 @@ function Category() {
                    </div>
                 )
          }*/}
-            <SubCategory />
+            {/*<SubCategory />*/}
+            <Outlet />
         </div>
     )
 }
