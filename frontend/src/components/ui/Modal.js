@@ -1,14 +1,20 @@
 import { IoMdClose } from 'react-icons/io'
 
-function Modal({ child, isTrue, isHideModalHandler }) {
+function Modal({
+  child,
+  isTrue,
+  popupchild,
+  isShowModalHandler,
+  isHideModalHandler,
+}) {
   return (
     <>
       {isTrue && (
         <div
           style={{ backgroundImage: `url("./images/bg.png")` }}
-          className="flex justify-center items-center backdrop-filter backdrop-blur-[2px] md:p-0 p-2 w-full fixed top-0 left-0 z-20 h-screen"
+          className="flex justify-center items-center backdrop-filter backdrop-blur-[0.5px] md:p-0 p-2 w-full fixed top-0 left-0 z-20 h-screen"
         >
-          <div className="w-[35rem] h-fit flex justify-center items-center relative m-auto bg-white rounded-lg p-6 md:p-8 shadow-2xl">
+          <div className="w-fit h-fit flex justify-center items-center relative m-auto bg-white rounded-lg p-6 md:p-8 shadow-sm">
             {/* Close button */}
             <div
               onClick={isHideModalHandler}
@@ -19,6 +25,8 @@ function Modal({ child, isTrue, isHideModalHandler }) {
 
             {child}
           </div>
+
+          {popupchild}
         </div>
       )}
     </>

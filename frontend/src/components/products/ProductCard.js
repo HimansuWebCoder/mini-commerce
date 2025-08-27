@@ -12,6 +12,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Modal from '../ui/Modal'
 import AddProductBtn from '../AddProductBtn'
 import { Spin } from 'antd'
+import DeletePopup from '../ui/DeletePopup'
 
 import { CiCirclePlus } from 'react-icons/ci'
 import { IoMdClose } from 'react-icons/io'
@@ -65,6 +66,29 @@ function ProductCardContainer(props) {
 
     const [subCategory, setSubCategory] = useState('')
     // const [showModalId, setIsShowModalId] = useState(null)
+    const [showDeletePopup, setIsShowDeletePopup] = useState(false)
+    const [deleteProductId, setDeleteProductId] = useState(null)
+    const [isHideDeleteModal, setIsHideDeleteModal] = useState(true)
+
+    const [isShow, setIsShow] = useState(false)
+
+    function isHideModalHandler() {
+        setIsShow(false)
+    }
+
+    function showDeletePopupHandler(id) {
+        setIsShowDeletePopup(true)
+        setIsShow(true)
+        fetch(`http://localhost:4000/products/${id}`, {
+            method: 'get',
+            credentials: 'include',
+        })
+            .then((res) => res.json())
+            .then((product) => {
+                setLoader(false)
+                setDeleteProductId(id)
+            })
+    }
 
     const handleFileChange = (e) => {
         setImageFile(e.target.files[0])
@@ -108,7 +132,7 @@ function ProductCardContainer(props) {
             .then((res) => res.json())
             .then(() => {
                 setLoader(false)
-                window.location.reload()
+                // window.location.reload()
             })
     }
 
@@ -354,10 +378,16 @@ function ProductCardContainer(props) {
                                             className="text-black"
                                         />
                                     </button>
-                                    <button
+                                    {/*<button
                                         className="w-fit flex justify-center items-center h-fit p-1 z-10 cursor-pointer rounded-lg text-white flex gap-2 absolute top-10 right-1 justify-center items-center font-medium"
                                         onClick={() =>
                                             deleteProduct(product._id)
+                                        }
+                                    >*/}
+                                    <button
+                                        className="w-fit flex justify-center items-center h-fit p-1 z-10 cursor-pointer rounded-lg text-white flex gap-2 absolute top-10 right-1 justify-center items-center font-medium"
+                                        onClick={() =>
+                                            showDeletePopupHandler(product._id)
                                         }
                                     >
                                         <MdDeleteOutline
@@ -365,6 +395,16 @@ function ProductCardContainer(props) {
                                             className="text-black"
                                         />
                                     </button>
+                                    {showDeletePopup && (
+                                        <DeletePopup
+                                            message="Are you sure to delete the Item ?"
+                                            id={product._id}
+                                            isShow={isShow}
+                                            isHideModalHandler={
+                                                isHideModalHandler
+                                            }
+                                        />
+                                    )}
                                 </>
                             )}
                         </div>

@@ -13,6 +13,9 @@ export const SubCategoryProvider = ({ children }) => {
 	const [isLoader, setIsLoader] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 
+	const [oneSubCategories, setOneSubCategories] = useState([])
+	const [oneSubCategoryId, setOneSubCategoryId] = useState(null)
+
 	// Fetch sub categories
 	useEffect(() => {
 		setIsLoader(true)
@@ -35,6 +38,28 @@ export const SubCategoryProvider = ({ children }) => {
 			fetchSubCatgories()
 		}, 1000)
 	}, [])
+
+	// useEffect(() => {
+	// 	fetch(`http://localhost:4000/categories/${oneSubCategoryId}`, {
+	// 		method: 'get',
+	// 		credentials: 'include',
+	// 	})
+	// 		.then((res) => res.json())
+	// 		.then((data) => {
+	// 			setOneSubCategories(data)
+	// 		})
+	// }, [oneSubCategoryId])
+
+	useEffect(() => {
+		fetch(`http://localhost:4000/subcategories/68ad7b27e6b791de19f2ec81`, {
+			method: 'get',
+			credentials: 'include',
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				setOneSubCategories(data.oneSubCategory.products)
+			})
+	}, [oneSubCategoryId])
 
 	// Post Sub-Categories
 	const addSubCategories = () => {
@@ -96,6 +121,8 @@ export const SubCategoryProvider = ({ children }) => {
 				setIsLoader,
 				isLoading,
 				setIsLoading,
+				setOneSubCategoryId,
+				oneSubCategories,
 			}}
 		>
 			{children}

@@ -7,6 +7,9 @@ import { Link } from 'react-router'
 import { Spin } from 'antd'
 import { Outlet } from 'react-router'
 
+import { FaRegEdit } from 'react-icons/fa'
+import { MdDeleteOutline } from 'react-icons/md'
+
 import { useContext } from 'react'
 import { CategoryContext } from '../../context/CategoryContext'
 
@@ -27,6 +30,11 @@ function Category() {
     const [selectCategory, setSelectCategory] = useState('')
     const [subCategory, setSubCategory] = useState('')
 
+    const [deletePopupAlertMsg, setIsDeletePopupAlertMsg] = useState('')
+    const [loader, setLoader] = useState(false)
+    const [deletePopupAlert, setDeletePopupAlert] = useState(false)
+    const [categoryId, setCategoryId] = useState(null)
+
     // Category products filter States
     // const [product, setProduct] = useState([...products])
 
@@ -41,13 +49,63 @@ function Category() {
     })
 
     const [showModal, setShowModal] = useState(false)
+    const [showDeleteModal, setDeleteShowModal] = useState(false)
 
     function isShowModalHandler() {
         setShowModal(true)
     }
 
+    function isShowDeleteModalHandler() {
+        setDeleteShowModal(true)
+    }
+
     function isHideModalHandler() {
         setShowModal(false)
+    }
+
+    function isHideDeleteModalHandler() {
+        setDeleteShowModal(false)
+    }
+
+    // Delete Category
+    function deleteCategory(id) {
+        setLoader(true)
+        fetch(`http://localhost:4000/categories/${id}`, {
+            method: 'delete',
+            credentials: 'include',
+        })
+            .then((res) => res.json())
+            .then(() => {
+                setLoader(false)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1000)
+
+                setDeletePopupAlert(true)
+                setIsDeletePopupAlertMsg('Product deleted Successfully')
+
+                setTimeout(() => {
+                    setDeletePopupAlert(false)
+                }, 1000)
+            })
+    }
+    {
+    }
+
+    // GET category Id
+    function showDeleteCategoryPopupHandler(id) {
+        // setIsShowDeletePopup(true)
+        isShowDeleteModalHandler()
+        // setIsShow(true)
+        fetch(`http://localhost:4000/category/${id}`, {
+            method: 'get',
+            credentials: 'include',
+        })
+            .then((res) => res.json())
+            .then((product) => {
+                setLoader(false)
+                setCategoryId(id)
+            })
     }
 
     // Fetch products
@@ -161,7 +219,7 @@ function Category() {
                         <div className="w-full h-full grid grid-cols-4 gap-4 p-4">
                             {categories.map((category) => (
                                 <div
-                                    className="flex rounded-lg justify-center  items-center"
+                                    className="flex relative rounded-lg justify-center  items-center"
                                     key={category._id}
                                 >
                                     <div
@@ -171,16 +229,91 @@ function Category() {
                                         className="font-poppins justify-center hover:bg-[#73C7C7] hover:text-white focus:bg-[#73C7C7] items-center gap-2 flex-col flex cursor-pointer hover:shadow-md  rounded-lg w-full h-full aspect-[1/1] p-2 font-normal shadow-lg"
                                     >
                                         <div className="max-w-40  h-40">
-                                            <img
-                                                className="w-full h-full object-contain"
-                                                src="/images/shop.png"
-                                                alt="shop"
-                                            />
+                                            <Link to={`/subcategory`}>
+                                                <img
+                                                    className="w-full h-full object-contain"
+                                                    src="/images/shop.png"
+                                                    alt="shop"
+                                                />
+                                            </Link>
                                         </div>
                                         <h1 className="font-poppins  text-[#173B45] text-2xl font-normal">
                                             {category.name}
                                         </h1>
                                     </div>
+                                    <button
+                                        className="w-fit flex justify-center items-center h-fit absolute top-4 right-2 z-10 cursor-pointer text-white p-1 rounded-lg"
+                                        // onClick={() =>
+                                        //     isShowHandler(product._id)
+                                        // }
+                                    >
+                                        <FaRegEdit
+                                            size="20"
+                                            className="text-black"
+                                        />
+                                    </button>
+
+                                    <button
+                                        className="w-fit flex justify-center items-center h-fit p-1 z-10 cursor-pointer rounded-lg text-white flex gap-2 absolute top-10 right-1 justify-center items-center font-medium"
+                                        onClick={() =>
+                                            showDeleteCategoryPopupHandler(
+                                                category._id,
+                                            )
+                                        }
+                                    >
+                                        <MdDeleteOutline
+                                            size="30"
+                                            className="text-black"
+                                        />
+                                    </button>
+                                    <Modal
+                                        isTrue={showDeleteModal}
+                                        isHideModalHandler={
+                                            isHideDeleteModalHandler
+                                        }
+                                        isShowModalHandler={
+                                            isShowDeleteModalHandler
+                                        }
+                                        child={
+                                            <div className=" w-full h-fit flex flex-col gap-2">
+                                                {/*<div className="flex justify-between items-center gap-2">*/}
+                                                <h1 className="font-poppins text-xl font-base">
+                                                    message
+                                                </h1>
+                                                {/*<MdClose size="30" className="text-black" />*/}
+                                                {/*</div>*/}
+                                                {/*<div className="w-full border h-fit flex  justify-end items-center gap-2">*/}
+                                                <div className="w-full h-fit grid grid-cols-2 gap-2">
+                                                    <button className="font-poppins text-xl border rounded-lg font-medium  h-fit p-2">
+                                                        Cancel
+                                                    </button>
+                                                    {loader ? (
+                                                        <button
+                                                            className="font-poppins text-xl flex justify-center items-center gap-2 bg-red-500 rounded-lg text-white font-medium h-fit p-2"
+                                                            onClick={() =>
+                                                                deleteCategory(
+                                                                    category._id,
+                                                                )
+                                                            }
+                                                        >
+                                                            Deleting... <Spin />
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            className="font-poppins text-xl bg-red-500 rounded-lg text-white font-medium h-fit p-2"
+                                                            onClick={() =>
+                                                                deleteCategory(
+                                                                    category._id,
+                                                                )
+                                                            }
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        }
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -189,6 +322,7 @@ function Category() {
 
                 <Modal
                     isTrue={showModal}
+                    isShowModalHandler={isShowModalHandler}
                     child={
                         <div className=" flex flex-col w-full  justify-center gap-2 items-start">
                             <label
@@ -297,6 +431,7 @@ function Category() {
                 )
          }*/}
             {/*<SubCategory />*/}
+
             <Outlet />
         </div>
     )

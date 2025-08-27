@@ -542,7 +542,7 @@ function Products() {
             {isShowProducts && <ProductCard />}
             {/*<ProductCard />*/}
 
-            {/*<Outlet />*/}
+            <Outlet />
         </div>
     )
 }

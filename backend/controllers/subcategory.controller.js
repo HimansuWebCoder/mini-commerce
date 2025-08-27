@@ -1,6 +1,7 @@
 const { SubCategory } = require('../models/subcategory.model.js')
 const { Category } = require('../models/category.model.js')
 
+// Create sub category
 const createSubCategory = async (req, res) => {
   try {
     const subCategory = await SubCategory.create(req.body)
@@ -24,6 +25,7 @@ const createSubCategory = async (req, res) => {
   }
 }
 
+// GET subcategory
 const getSubCategories = async (req, res) => {
   try {
     //  const subcategories = await SubCategory.find().populate({path: "products", select:"productName productPrice productImg"}).populate("category", "name");
@@ -58,4 +60,35 @@ const getOneSubCategory = async (req, res) => {
   return res.status(200).json({ oneSubCategory })
 }
 
-module.exports = { createSubCategory, getSubCategories, getOneSubCategory }
+// UPDATE SubCategory data models
+async function updateSubCategory(req, res) {
+  const updateSubCategory = await SubCategory.findByIdAndUpdate(
+    req.params.id,
+    { $set: req.body },
+    { new: true },
+  )
+
+  if (!updateSubCategory) {
+    return res.status(404).json({ message: 'Product not found' })
+  } else {
+    return res.json(updateSubCategory)
+  }
+}
+
+// DELETE SubCategory data models
+async function deleteSubCategory(req, res) {
+  const deletedSubCategory = await SubCategory.findByIdAndDelete(req.params.id)
+  if (!deletedSubCategory) {
+    res.status(404).json({ message: 'Category not found to delete' })
+  } else {
+    res.json({ response: 'Category deleted successfully' })
+  }
+}
+
+module.exports = {
+  createSubCategory,
+  getSubCategories,
+  getOneSubCategory,
+  updateSubCategory,
+  deleteSubCategory,
+}

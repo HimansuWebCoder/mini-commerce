@@ -111,6 +111,15 @@ function GetOneProduct() {
                     <div>/</div>
                     <div>
                         <Link
+                            to="/products"
+                            className="text-gray-600 font-medium font-poppins"
+                        >
+                            Products
+                        </Link>
+                    </div>
+                    <div>/</div>
+                    <div>
+                        <Link
                             to={`/products/${productId}`}
                             className="text-gray-600 font-medium font-poppins"
                         >

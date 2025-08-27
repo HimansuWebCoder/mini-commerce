@@ -25,4 +25,29 @@ const postCategory = async (req, res) => {
        }
 }
 
-module.exports = { getCategories, postCategory }
+// UPDATE Category data models
+async function updateCategory(req, res) {
+       const updateCategory = await Category.findByIdAndUpdate(
+              req.params.id,
+              { $set: req.body },
+              { new: true },
+       )
+
+       if (!updateCategory) {
+              return res.status(404).json({ message: 'Product not found' })
+       } else {
+              return res.json(updateCategory)
+       }
+}
+
+// DELETE Category data models
+async function deleteCategory(req, res) {
+       const deletedCategory = await Category.findByIdAndDelete(req.params.id)
+       if (!deletedCategory) {
+              res.status(404).json({ message: 'Category not found to delete' })
+       } else {
+              res.json({ response: 'Category deleted successfully' })
+       }
+}
+
+module.exports = { getCategories, postCategory, deleteCategory, updateCategory }
