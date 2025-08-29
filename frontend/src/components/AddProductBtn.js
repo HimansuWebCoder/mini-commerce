@@ -12,10 +12,10 @@ function AddProductBtn() {
   }
 
   return (
-    <>
+    <div className="w-full flex justify-end items-center">
       <button
         onClick={isShowModalHandler}
-        className="flex items-center font-poppins gap-2 bg-[#EFEEEA] hover:bg-gray-200 text-[#273F4F] font-semibold py-2 px-4 rounded-lg transition-colors duration-300"
+        className="flex items-center text-xl font-opensans gap-2 bg-[#EFEEEA] hover:bg-gray-200 text-[#273F4F] font-semibold py-3 px-8 rounded-lg transition-colors duration-300"
       >
         <CiCirclePlus size="24" />
         Add product
@@ -24,7 +24,7 @@ function AddProductBtn() {
       {isShowModal && (
         <AddProduct isShow={show} setIsShowModal={setIsShowModal} />
       )}
-    </>
+    </div>
   )
 }
 

@@ -118,15 +118,15 @@ function SubCategory() {
                                     className="cursor-pointer flex flex-col gap-2 justify-center items-center  focus:bg-[#EFEFEF] focus:border-0 rounded-lg w-full p-2 text-[#173B45] font-base hover:shadow-lg border"
                                 >
                                     <div className="max-w-40  h-40">
-                                        <Link
+                                        {/*<Link
                                             to={`/subcategory/${subcategory._id}`}
-                                        >
-                                            <img
-                                                className="w-full h-full object-contain"
-                                                src="/images/shop.png"
-                                                alt="shop"
-                                            />
-                                        </Link>
+                                        >*/}
+                                        <img
+                                            className="w-full h-full object-contain"
+                                            src="/images/shop.png"
+                                            alt="shop"
+                                        />
+                                        {/*</Link>*/}
                                     </div>
 
                                     <h1 className="font-poppins  text-[#173B45] text-2xl font-normal">
@@ -140,83 +140,6 @@ function SubCategory() {
                     {/*<p className="text-7xl">{oneSubCategory.name}</p>*/}
                 </div>
             )}
-
-            <Modal
-                child={
-                    <div className=" flex flex-col w-full justify-center gap-2 items-start">
-                        <label
-                            className="font-inter text-xl text-red-400 font-medium"
-                            htmlFor="productCategory"
-                        >
-                            Add SubCategory
-                        </label>
-                        <input
-                            type="text"
-                            value={subCategory}
-                            onChange={(e) => setSubCategory(e.target.value)}
-                            placeholder="Product Category"
-                            className="bg-gray-100 text-black border text-gray-400 focus:outline-red-300 w-full text-sm font-poppins rounded-lg p-2"
-                            id="productCategory"
-                        />
-                        {/*
-                         <label className="font-inter text-xl text-red-400 font-medium" htmlFor="productCategory">Add Category</label>
-                         <input 
-                         type="text"
-                         value={category}
-                         onChange={(e) => setCategory(e.target.value)}
-                         placeholder="Product Category"
-                         className="bg-gray-100 text-black border text-gray-400 focus:outline-red-300 w-full text-sm font-poppins rounded-lg p-2"
-                         id="productCategory" />*/}
-
-                        <label
-                            className="font-inter text-xl text-red-400 font-medium"
-                            htmlFor="select-category"
-                        >
-                            Categories
-                        </label>
-                        <select
-                            className="w-full rounded-lg h-fit p-2 text-[#44444E] focus:outline-red-400"
-                            onChange={setCategoryId}
-                            value={category}
-                            id="select-category"
-                            name="select-category"
-                        >
-                            {categories.map((cat) => (
-                                <option
-                                    className="text-[#44444E] "
-                                    key={cat._id}
-                                    value={cat._id}
-                                >
-                                    {cat.name}
-                                </option>
-                            ))}
-                        </select>
-
-                        {/*<div className="w-full flex justify-end border items-center">*/}
-                        <div className="w-full grid grid-cols-1 place-content-end place-items-end">
-                            {isLoading ? (
-                                <button
-                                    onClick={addSubCategories}
-                                    className="p-2 border flex gap-2 focus:outline-red-500 w-fit justify-center items-center h-fit font-medium font-poppins hover:text-gray-300  bg-gradient-to-r from-[#2C4E80] to-[#34699A] text-white text-xl rounded-lg"
-                                >
-                                    Adding...
-                                    <Spin />
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={addSubCategories}
-                                    className="p-2 border focus:outline-red-500 w-40 h-fit font-medium font-poppins hover:text-gray-300  bg-gradient-to-r from-[#2C4E80] to-[#34699A] text-white text-xl rounded-lg"
-                                >
-                                    Add
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                }
-                isTrue={showModal}
-                isShowModalHandler={isShowModalHandler}
-                isHideModalHandler={isHideModalHandler}
-            />
         </div>
     )
 }

@@ -6,6 +6,7 @@ import Category from './components/products/Category.js'
 import SubCategory from './components/products/SubCategory.js'
 import GetOneProduct from './components/products/GetOneProduct.js'
 import OneSubCategory from './components/products/OneSubCategory.js'
+import OneCategory from './components/products/OneCategory.js'
 import AddProduct from './components/AddProduct.js'
 
 import { CategoryProvider } from './context/CategoryContext'
@@ -19,7 +20,7 @@ function App() {
         <SubCategoryProvider>
           <ProductsProvider>
             <Routes>
-              <Route path="/" element={<Layout />}>
+              <Route path="/*" element={<Layout />}>
                 <Route path="products" element={<Products />} />
                 {/*<Route index element={<AddProduct />} />*/}
                 <Route path="products/:productId" element={<GetOneProduct />} />
@@ -30,6 +31,7 @@ function App() {
                   path="subcategory/:subcategoryId"
                   element={<OneSubCategory />}
                 />
+                <Route path="category/:categoryId" element={<OneCategory />} />
               </Route>
             </Routes>
           </ProductsProvider>

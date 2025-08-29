@@ -9,6 +9,7 @@ export const ProductsProvider = ({ children }) => {
 	// Edit product States
 	const [editProductName, setEditProductName] = useState('')
 	const [editProductCategory, setEditProductCategory] = useState('')
+	const [editProductSubCategory, setEditProductSubCategory] = useState('')
 	const [editProductDescription, setEditProductDescription] = useState('')
 	const [editProductOriginalPrice, setEditProductOriginalPrice] = useState('')
 	const [editDiscount, setEditDiscount] = useState('')
@@ -27,7 +28,7 @@ export const ProductsProvider = ({ children }) => {
 
 	const isHideHandler = () => {
 		setIsShowModalId(null)
-		setImageFileShow('')
+		// setImageFileShow('')
 	}
 
 	// Fetch products
@@ -44,6 +45,7 @@ export const ProductsProvider = ({ children }) => {
 				const productsData = await products.json()
 				setIsLoading(false)
 				setProducts(productsData.newProducts)
+				console.log('my all products', productsData.newProducts)
 				// console.log(
 				//     'category name',
 				//     productsData.newProducts[0].category.name,
@@ -80,7 +82,8 @@ export const ProductsProvider = ({ children }) => {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				productName: editProductName,
-				productCategory: editProductCategory,
+				category: editProductCategory,
+				subcategory: editProductSubCategory,
 				productImg: cloudData.secure_url,
 				productPrice: editProductPrice,
 				productOriginalPrice: editProductOriginalPrice,
@@ -122,6 +125,8 @@ export const ProductsProvider = ({ children }) => {
 				setEditProductName,
 				editProductCategory,
 				setEditProductCategory,
+				editProductSubCategory,
+				setEditProductSubCategory,
 				editProductDescription,
 				setEditProductDescription,
 				editProductOriginalPrice,
@@ -142,8 +147,6 @@ export const ProductsProvider = ({ children }) => {
 				setImageUrl,
 				imageFileShow,
 				setImageFileShow,
-				showModalId,
-				setIsShowModalId,
 				isHideHandler,
 				editProduct,
 			}}

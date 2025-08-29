@@ -15,6 +15,41 @@ const getCategories = async (req, res) => {
        }
 }
 
+// GET one Category
+async function getOneCategory(req, res) {
+       const id = req.params.id
+
+       // if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+       //     return res.status(400).json({ message: 'Invalid product ID provided' })
+       // }
+
+       // const getProduct = await Products.findById(id);
+       const getOneCategory = await Category.findById(id)
+              .populate('subcategories')
+              .populate({
+                     path: 'products',
+                     populate: [
+                            {
+                                   path: 'subcategory',
+                                   select: 'name',
+                            },
+                     ],
+              })
+       // const oneSubCategory = await SubCategory.findById(id).populate({
+       //     path: 'products',
+       //     populate: [
+       //       { path: 'category', select: 'name' },
+       //       { path: 'subcategory', select: 'name' },
+       //     ],
+       //   })
+
+       if (getOneCategory) {
+              return res.status(200).json({ getOneCategory })
+       } else {
+              return res.status(404).json({ message: 'Product not found' })
+       }
+}
+
 // POST Category data model
 const postCategory = async (req, res) => {
        try {
@@ -50,4 +85,10 @@ async function deleteCategory(req, res) {
        }
 }
 
-module.exports = { getCategories, postCategory, deleteCategory, updateCategory }
+module.exports = {
+       getCategories,
+       getOneCategory,
+       postCategory,
+       deleteCategory,
+       updateCategory,
+}

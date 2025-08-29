@@ -49,14 +49,22 @@ const getOneSubCategory = async (req, res) => {
   const id = req.params.id
   // console.log("Requested SubCategory ID:", id);
 
+  // const oneSubCategory = await SubCategory.findById(id).populate({
+  //   path: 'products',
+  //   populate: [
+  //     { path: 'category', select: 'name' },
+  //     { path: 'subcategory', select: 'name' },
+  //   ],
+
   const oneSubCategory = await SubCategory.findById(id).populate({
     path: 'products',
     populate: [
-      { path: 'category', select: 'name' },
-      { path: 'subcategory', select: 'name' },
+      {
+        path: 'subcategory',
+        select: 'name',
+      },
     ],
   })
-
   return res.status(200).json({ oneSubCategory })
 }
 

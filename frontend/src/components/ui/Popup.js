@@ -1,7 +1,5 @@
 function Popup() {
-	return (
-
-		)
+	return <div></div>
 }
 
-export default Popup;
+export default Popup

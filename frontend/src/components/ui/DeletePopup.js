@@ -10,6 +10,7 @@ function DeletePopup({ message, isShow, isHideModalHandler, id }) {
 	const [loader, setLoader] = useState(false)
 	const [deletePopupAlert, setDeletePopupAlert] = useState(false)
 	const [isHideDeleteModal, setIsHideDeleteModal] = useState(true)
+
 	// Delete Products
 	function deleteProduct(id) {
 		setLoader(true)

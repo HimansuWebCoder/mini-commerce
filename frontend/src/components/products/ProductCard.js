@@ -27,8 +27,12 @@ import Box from '@mui/material/Box'
 import { useState, useEffect } from 'react'
 import { useContext } from 'react'
 import { ProductsContext } from '../../context/ProductsContext'
+import { CategoryContext } from '../../context/CategoryContext'
+import { SubCategoryContext } from '../../context/SubCategoryContext'
 
 function ProductCardContainer(props) {
+    const { categories } = useContext(CategoryContext)
+    const { subCategories } = useContext(SubCategoryContext)
     const {
         products,
         setProducts,
@@ -36,6 +40,8 @@ function ProductCardContainer(props) {
         setEditProductName,
         editProductCategory,
         setEditProductCategory,
+        editProductSubCategory,
+        setEditProductSubCategory,
         editProductDescription,
         setEditProductDescription,
         editProductOriginalPrice,
@@ -56,8 +62,6 @@ function ProductCardContainer(props) {
         setImageUrl,
         imageFileShow,
         setImageFileShow,
-        showModalId,
-        setIsShowModalId,
         editProduct,
         isHideHandler,
     } = useContext(ProductsContext)
@@ -65,19 +69,27 @@ function ProductCardContainer(props) {
     const { loading = false } = props
 
     const [subCategory, setSubCategory] = useState('')
-    // const [showModalId, setIsShowModalId] = useState(null)
+    const [showModalId, setIsShowModalId] = useState(null)
     const [showDeletePopup, setIsShowDeletePopup] = useState(false)
     const [deleteProductId, setDeleteProductId] = useState(null)
     const [isHideDeleteModal, setIsHideDeleteModal] = useState(true)
 
     const [isShow, setIsShow] = useState(false)
+    const [isShowProductModal, setIsShowProductModal] = useState(true)
+    const [showDelProductId, setShowDelProductId] = useState(null)
 
     function isHideModalHandler() {
         setIsShow(false)
     }
 
+    function showProductModal() {
+        setIsShowModalId(null)
+        setIsShowProductModal(false)
+    }
+
     function showDeletePopupHandler(id) {
         setIsShowDeletePopup(true)
+        setShowDelProductId(id)
         setIsShow(true)
         fetch(`http://localhost:4000/products/${id}`, {
             method: 'get',
@@ -99,6 +111,7 @@ function ProductCardContainer(props) {
 
     function isShowHandler(id) {
         setIsShowModalId(id)
+        setIsShowProductModal(true)
         fetch(`http://localhost:4000/products/${id}`, {
             method: 'get',
             credentials: 'include',
@@ -123,6 +136,7 @@ function ProductCardContainer(props) {
 
     // Delete Products
     function deleteProduct(id) {
+        setIsShowModalId(id)
         setLoader(true)
         fetch(`http://localhost:4000/products/${id}`, {
             method: 'delete',
@@ -137,11 +151,11 @@ function ProductCardContainer(props) {
     }
 
     return (
-        <div className="grid  grid-cols-2 place-content-center place-items-center md:place-items-end sm:grid-cols-2 md:grid-cols-1 p-4 gap-4 w-full">
+        <div className="grid grid-cols-1 place-content-center place-items-center md:place-items-end sm:grid-cols-2 md:grid-cols-1 p-4 gap-4 w-full">
             <div className="w-full flex justify-end">
                 <AddProductBtn />
             </div>
-            <div className="grid  grid-cols-2 place-content-center place-items-center md:place-items-start sm:grid-cols-2 md:grid-cols-4 p-2 gap-8 w-full">
+            <div className="grid  grid-cols-2 place-content-center place-items-center md:place-items-start sm:grid-cols-2 md:grid-cols-4 gap-8 w-full">
                 {products.map((product) => (
                     <Card
                         key={product._id}
@@ -152,7 +166,8 @@ function ProductCardContainer(props) {
                         }}
                     >
                         <div className="grid grid-cols-1 relative rounded-lg">
-                            {showModalId === product._id ? (
+                            {showModalId === product._id &&
+                            isShowProductModal ? (
                                 <div
                                     style={{
                                         backgroundImage: `url("./images/bg.png")`,
@@ -162,7 +177,7 @@ function ProductCardContainer(props) {
                                     <div className="w-full h-fit">
                                         <div className="max-w-[40rem] m-auto p-4  rounded-2xl grid grid-cols-2 relative gap-4  bg-white shadow-2xl">
                                             <div
-                                                onClick={isHideHandler}
+                                                onClick={showProductModal}
                                                 className="absolute cursor-pointer top-2 right-2 p-1 rounded-full aspect-[1/1]"
                                             >
                                                 <MdClose
@@ -277,25 +292,125 @@ function ProductCardContainer(props) {
                                                 />
                                             </div>
 
-                                            <div className=" flex flex-col w-full  justify-center gap-2 items-start">
+                                            <div className="flex flex-col w-full h-fit  justify-center gap-2 items-start">
                                                 <label
                                                     className="font-inter text-xl text-red-400 font-medium"
-                                                    htmlFor="productCategory"
+                                                    htmlFor="select-category"
                                                 >
-                                                    Category
+                                                    Categories
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    value={editProductCategory}
+                                                <select
+                                                    className="w-full rounded-lg h-fit p-2 focus:outline-red-400"
                                                     onChange={(e) =>
                                                         setEditProductCategory(
                                                             e.target.value,
                                                         )
                                                     }
-                                                    placeholder="Product Category"
-                                                    className="bg-gray-50 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
-                                                    id="productCategory"
-                                                />
+                                                    value={editProductCategory}
+                                                    id="select-category"
+                                                    name="select-category"
+                                                    defaultValue={
+                                                        product?.category?._id
+                                                    }
+                                                >
+                                                    <option
+                                                        value=""
+                                                        defaultValue
+                                                    >
+                                                        Select Category
+                                                    </option>
+                                                    {categories.map(
+                                                        (category) => (
+                                                            <option
+                                                                selected
+                                                                value={
+                                                                    category?._id
+                                                                }
+                                                            >
+                                                                {category?.name}
+                                                            </option>
+                                                        ),
+                                                    )}
+
+                                                    {/*<option
+                                                        value={
+                                                            product?.category
+                                                                ?._id
+                                                        }
+                                                    >
+                                                        {
+                                                            product?.category
+                                                                ?.name
+                                                        }
+                                                    </option>*/}
+                                                </select>
+
+                                                <div className="flex flex-col w-full h-fit  justify-center gap-2 items-start">
+                                                    <label
+                                                        className="font-inter text-xl text-red-400 font-medium"
+                                                        htmlFor="select-category"
+                                                    >
+                                                        Sub Category
+                                                    </label>
+                                                    <select
+                                                        className="w-full rounded-lg h-fit p-2 focus:outline-red-400"
+                                                        onChange={(e) =>
+                                                            setEditProductSubCategory(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        value={
+                                                            editProductSubCategory
+                                                        }
+                                                        id="select-category"
+                                                        name="select-category"
+                                                        defaultValue={
+                                                            product?.subcategory
+                                                                ?._id
+                                                        }
+                                                    >
+                                                        <option
+                                                            value=""
+                                                            defaultValue={
+                                                                product
+                                                                    ?.subcategory
+                                                                    ?._id
+                                                            }
+                                                        >
+                                                            Select SubCategory
+                                                        </option>
+                                                        {subCategories.map(
+                                                            (subcategory) => (
+                                                                <option
+                                                                    key={
+                                                                        subcategory?._id
+                                                                    }
+                                                                    value={
+                                                                        subcategory?._id
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        subcategory?.name
+                                                                    }
+                                                                </option>
+                                                            ),
+                                                        )}
+
+                                                        {/*<option
+                                                            value={
+                                                                product
+                                                                    ?.subcategory
+                                                                    ?._id
+                                                            }
+                                                        >
+                                                            {
+                                                                product
+                                                                    ?.subcategory
+                                                                    ?.name
+                                                            }
+                                                        </option>*/}
+                                                    </select>
+                                                </div>
                                             </div>
 
                                             <div className=" flex flex-col w-full  justify-center gap-2 items-start">
@@ -322,46 +437,45 @@ function ProductCardContainer(props) {
                                             </div>
                                             {/*<div className="flex flex-wrap gap-4 w-full mt-9 justify-end">*/}
                                             <div className="grid grid-cols-2 place-content-center place-items-center gap-2">
-                                                <button
-                                                    className="border cursor-pointer bg-[#06923E] font-medium cursor-pointer justify-center items-center p-2 w-full rounded-lg flex gap-2 text-xl text-white"
-                                                    onClick={() =>
-                                                        editProduct(product._id)
-                                                    }
-                                                >
-                                                    Save
-                                                </button>
+                                                {loader ? (
+                                                    <button
+                                                        className="border cursor-pointer bg-[#06923E] font-medium cursor-pointer justify-center items-center p-2 w-full rounded-lg flex gap-2 text-xl text-white"
+                                                        onClick={() =>
+                                                            editProduct(
+                                                                product._id,
+                                                            )
+                                                        }
+                                                    >
+                                                        Saving... <Spin />
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className="border cursor-pointer bg-[#06923E] font-medium cursor-pointer justify-center items-center p-2 w-full rounded-lg flex gap-2 text-xl text-white"
+                                                        onClick={() =>
+                                                            editProduct(
+                                                                product._id,
+                                                            )
+                                                        }
+                                                    >
+                                                        Save
+                                                    </button>
+                                                )}
+
                                                 <button
                                                     className="border cursor-pointer bg-red-600 w-full h-fit p-2 cursor-pointer rounded-lg text-white flex gap-2 justify-center items-center text-xl font-medium"
-                                                    onClick={() =>
+                                                    onClick={() => {
                                                         isHideHandler(
                                                             product._id,
                                                         )
-                                                    }
+
+                                                        setIsShowProductModal(
+                                                            false,
+                                                        )
+                                                    }}
                                                 >
                                                     Cancel
                                                 </button>
                                             </div>
-                                            {loader && (
-                                                <Box
-                                                    sx={{
-                                                        display: 'flex',
-                                                        justifyContent:
-                                                            'center',
-                                                        margin: 'auto',
-                                                        width: '200px',
-                                                        height: 'auto',
-                                                        position: 'absolute',
-                                                        top: '200px',
-                                                        left: '210px',
-                                                    }}
-                                                >
-                                                    <CircularProgress
-                                                        sx={{
-                                                            color: 'primary', // Set the desired color here
-                                                        }}
-                                                    />
-                                                </Box>
-                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -398,7 +512,7 @@ function ProductCardContainer(props) {
                                     {showDeletePopup && (
                                         <DeletePopup
                                             message="Are you sure to delete the Item ?"
-                                            id={product._id}
+                                            id={showDelProductId}
                                             isShow={isShow}
                                             isHideModalHandler={
                                                 isHideModalHandler
@@ -481,7 +595,7 @@ function ProductCardContainer(props) {
                                     </div>
                                     <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">
                                         <p className="text-gray-600 font-roboto text-sm font-medium">
-                                            {product.productCategory}
+                                            {product.subcategory?.name}
                                         </p>
                                     </div>
                                 </div>

@@ -21,8 +21,31 @@ function Category() {
         addCategories,
         isLoader,
         setIsLoader,
+        loader,
+        setLoader,
         isLoading,
         setIsLoading,
+        deletePopupAlertMsg,
+        setIsDeletePopupAlertMsg,
+        deletePopupAlert,
+        setDeletePopupAlert,
+        deleteCategory,
+        categoryId,
+        setCategoryId,
+        showDeleteCategoryPopupHandler,
+        showDeleteModal,
+        setDeleteShowModal,
+        isShowDeleteModalHandler,
+        editCategory,
+        setEditCategory,
+        showEditCategoryPopupHandler,
+        showEditModalHandler,
+        showModal,
+        setShowModal,
+        editOneCategory,
+        showEditModal,
+        setShowEditModal,
+        hideEditModalHandler,
     } = useContext(CategoryContext)
 
     // const [products, setProducts] = useState([])
@@ -30,10 +53,7 @@ function Category() {
     const [selectCategory, setSelectCategory] = useState('')
     const [subCategory, setSubCategory] = useState('')
 
-    const [deletePopupAlertMsg, setIsDeletePopupAlertMsg] = useState('')
-    const [loader, setLoader] = useState(false)
-    const [deletePopupAlert, setDeletePopupAlert] = useState(false)
-    const [categoryId, setCategoryId] = useState(null)
+    // const [categoryId, setCategoryId] = useState(null)
 
     // Category products filter States
     // const [product, setProduct] = useState([...products])
@@ -48,64 +68,23 @@ function Category() {
         }
     })
 
-    const [showModal, setShowModal] = useState(false)
-    const [showDeleteModal, setDeleteShowModal] = useState(false)
+    // const [showModal, setShowModal] = useState(false)
 
     function isShowModalHandler() {
         setShowModal(true)
     }
 
-    function isShowDeleteModalHandler() {
-        setDeleteShowModal(true)
+    function isHideAddCategoryModalHandler() {
+        setShowModal(false)
     }
 
-    function isHideModalHandler() {
-        setShowModal(false)
+    function isHideModalHandler(e) {
+        setShowEditModal(false)
+        console.log(e.target)
     }
 
     function isHideDeleteModalHandler() {
         setDeleteShowModal(false)
-    }
-
-    // Delete Category
-    function deleteCategory(id) {
-        setLoader(true)
-        fetch(`http://localhost:4000/categories/${id}`, {
-            method: 'delete',
-            credentials: 'include',
-        })
-            .then((res) => res.json())
-            .then(() => {
-                setLoader(false)
-                setTimeout(() => {
-                    window.location.reload()
-                }, 1000)
-
-                setDeletePopupAlert(true)
-                setIsDeletePopupAlertMsg('Product deleted Successfully')
-
-                setTimeout(() => {
-                    setDeletePopupAlert(false)
-                }, 1000)
-            })
-    }
-    {
-    }
-
-    // GET category Id
-    function showDeleteCategoryPopupHandler(id) {
-        // setIsShowDeletePopup(true)
-        isShowDeleteModalHandler()
-        // setIsShow(true)
-        fetch(`http://localhost:4000/category/${id}`, {
-            method: 'get',
-            credentials: 'include',
-        })
-            .then((res) => res.json())
-            .then((product) => {
-                setLoader(false)
-                setCategoryId(id)
-            })
     }
 
     // Fetch products
@@ -160,11 +139,12 @@ function Category() {
 
     return (
         <div className=" w-fit grid  grid-cols-1 gap-4 w-full h-full place-content-center place-items-center">
-            <div className="grid  shadow-lg grid-cols-1 w-full h-full p-4 gap-4 place-content-center place-items-center">
-                <div className="font-poppins text-2xl text-[#44444E] w-full flex justify-between items-center p-2 font-medium">
+            <div className="grid grid-cols-1 w-full h-full p-4 gap-4 place-content-center place-items-center">
+                <div className="font-poppins text-2xl border-b text-[#44444E] w-full flex justify-between items-center p-2 font-medium">
                     <h1 className="font-poppins text-3xl text-[#44444E] flex justify-start font-medium">
                         Explore by Categories
                     </h1>
+
                     <div className="flex gap-2 items-center justify-end">
                         <button
                             onClick={isShowModalHandler}
@@ -176,6 +156,29 @@ function Category() {
                     </div>
                 </div>
 
+                <div className="w-full flex gap-2">
+                    <Link
+                        to="/"
+                        className="text-gray-600 font-medium font-poppins"
+                    >
+                        Home
+                    </Link>
+                    <div>/</div>
+                    <Link
+                        to="/products"
+                        className="text-gray-600 font-medium font-poppins"
+                    >
+                        Products
+                    </Link>
+                    <div>/</div>
+                    <Link
+                        to="/category"
+                        className="text-gray-600 font-medium font-poppins"
+                    >
+                        Category
+                    </Link>
+                </div>
+
                 <div className="flex w-full gap-4 items-center justify-start [&::-webkit-scrollbar]:hidden  overflow-x-auto">
                     {isLoader ? (
                         <div className="w-full h-full grid grid-cols-4 gap-4">
@@ -184,39 +187,9 @@ function Category() {
                                 width={300}
                                 height={300}
                             />
-                            <Skeleton
-                                variant="rounded"
-                                width={300}
-                                height={300}
-                            />
-                            <Skeleton
-                                variant="rounded"
-                                width={300}
-                                height={300}
-                            />
-                            <Skeleton
-                                variant="rounded"
-                                width={300}
-                                height={300}
-                            />
-                            <Skeleton
-                                variant="rounded"
-                                width={300}
-                                height={300}
-                            />
-                            <Skeleton
-                                variant="rounded"
-                                width={300}
-                                height={300}
-                            />
-                            <Skeleton
-                                variant="rounded"
-                                width={300}
-                                height={300}
-                            />
                         </div>
                     ) : (
-                        <div className="w-full h-full grid grid-cols-4 gap-4 p-4">
+                        <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
                             {categories.map((category) => (
                                 <div
                                     className="flex relative rounded-lg justify-center  items-center"
@@ -226,13 +199,15 @@ function Category() {
                                         onClick={(e) =>
                                             setSelectCategory(category.category)
                                         }
-                                        className="font-poppins justify-center hover:bg-[#73C7C7] hover:text-white focus:bg-[#73C7C7] items-center gap-2 flex-col flex cursor-pointer hover:shadow-md  rounded-lg w-full h-full aspect-[1/1] p-2 font-normal shadow-lg"
+                                        className="font-poppins justify-center focus:bg-[#73C7C7] items-center gap-2 flex-col flex cursor-pointer hover:shadow-lg  rounded-lg w-full h-full aspect-[1/1] p-2 font-normal border"
                                     >
                                         <div className="max-w-40  h-40">
-                                            <Link to={`/subcategory`}>
+                                            <Link
+                                                to={`/category/${category._id}`}
+                                            >
                                                 <img
                                                     className="w-full h-full object-contain"
-                                                    src="/images/shop.png"
+                                                    src="/images/category.png"
                                                     alt="shop"
                                                 />
                                             </Link>
@@ -243,9 +218,11 @@ function Category() {
                                     </div>
                                     <button
                                         className="w-fit flex justify-center items-center h-fit absolute top-4 right-2 z-10 cursor-pointer text-white p-1 rounded-lg"
-                                        // onClick={() =>
-                                        //     isShowHandler(product._id)
-                                        // }
+                                        onClick={() =>
+                                            showEditCategoryPopupHandler(
+                                                category._id,
+                                            )
+                                        }
                                     >
                                         <FaRegEdit
                                             size="20"
@@ -266,6 +243,80 @@ function Category() {
                                             className="text-black"
                                         />
                                     </button>
+                                    {/* Edit category modal start*/}
+
+                                    <Modal
+                                        isTrue={showEditModal}
+                                        isShowModalHandler={
+                                            showEditModalHandler
+                                        }
+                                        isHideModalHandler={
+                                            hideEditModalHandler
+                                        }
+                                        child={
+                                            <div className=" flex flex-col w-full  justify-center gap-2 items-start">
+                                                <label
+                                                    className="font-inter text-xl text-red-400 font-medium"
+                                                    htmlFor="productCategory"
+                                                >
+                                                    Edit Category
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={editCategory}
+                                                    onChange={(e) =>
+                                                        setEditCategory(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="Product Category"
+                                                    className="bg-gray-100 text-black border text-gray-400 focus:outline-red-300 w-full text-sm font-poppins rounded-lg p-2"
+                                                    id="productCategory"
+                                                />
+                                                {/*<div className="w-full border flex justify-end items-center">*/}
+                                                <div className="w-full grid grid-cols-1 place-content-center place-items-end">
+                                                    <div className="w-full grid grid-cols-2 gap-2">
+                                                        <button
+                                                            onClick={() =>
+                                                                hideEditModalHandler()
+                                                            }
+                                                            className="p-2 border focus:outline-red-500 h-fit font-medium font-poppins hover:bg-gray-100 text-xl rounded-lg"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                        {isLoading ? (
+                                                            <button
+                                                                onClick={() =>
+                                                                    editOneCategory(
+                                                                        categoryId,
+                                                                    )
+                                                                }
+                                                                className="p-2 border focus:outline-red-500 h-fit font-medium font-poppins hover:text-gray-300  bg-gradient-to-r from-[#2C4E80] to-[#34699A] text-white text-xl rounded-lg"
+                                                            >
+                                                                Updating...{' '}
+                                                                <Spin />
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() =>
+                                                                    editOneCategory(
+                                                                        categoryId,
+                                                                    )
+                                                                }
+                                                                className="p-2 border focus:outline-red-500 h-fit font-medium font-poppins hover:text-gray-300  bg-gradient-to-r from-[#2C4E80] to-[#34699A] text-white text-xl rounded-lg"
+                                                            >
+                                                                Update
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        isHideModalHandler={isHideModalHandler}
+                                        isShowModalHandler={isShowModalHandler}
+                                    />
+                                    {/* Edit category modal end*/}
+
                                     <Modal
                                         isTrue={showDeleteModal}
                                         isHideModalHandler={
@@ -278,7 +329,8 @@ function Category() {
                                             <div className=" w-full h-fit flex flex-col gap-2">
                                                 {/*<div className="flex justify-between items-center gap-2">*/}
                                                 <h1 className="font-poppins text-xl font-base">
-                                                    message
+                                                    Are you sure to delete the
+                                                    category ?
                                                 </h1>
                                                 {/*<MdClose size="30" className="text-black" />*/}
                                                 {/*</div>*/}
@@ -303,7 +355,7 @@ function Category() {
                                                             className="font-poppins text-xl bg-red-500 rounded-lg text-white font-medium h-fit p-2"
                                                             onClick={() =>
                                                                 deleteCategory(
-                                                                    category._id,
+                                                                    categoryId,
                                                                 )
                                                             }
                                                         >
@@ -323,6 +375,7 @@ function Category() {
                 <Modal
                     isTrue={showModal}
                     isShowModalHandler={isShowModalHandler}
+                    isHideModalHandler={isHideAddCategoryModalHandler}
                     child={
                         <div className=" flex flex-col w-full  justify-center gap-2 items-start">
                             <label
@@ -362,8 +415,6 @@ function Category() {
                             </div>
                         </div>
                     }
-                    isHideModalHandler={isHideModalHandler}
-                    isShowModalHandler={isShowModalHandler}
                 />
 
                 {/*  <div className="grid grid-cols-2 m-auto p-4 border w-[500px]">

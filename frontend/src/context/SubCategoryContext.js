@@ -6,6 +6,7 @@ export const SubCategoryContext = createContext()
 export const SubCategoryProvider = ({ children }) => {
 	const [subCategories, setSubCategories] = useState([])
 	const [subCategory, setSubCategory] = useState('')
+	const [editSubCategory, setEditSubCategory] = useState('')
 	const [category, setCategory] = useState('')
 	const [oneSubCategory, setOneSubCategory] = useState({})
 	const [subCategoryProducts, setSubCategoryProducts] = useState([])
@@ -15,6 +16,27 @@ export const SubCategoryProvider = ({ children }) => {
 
 	const [oneSubCategories, setOneSubCategories] = useState([])
 	const [oneSubCategoryId, setOneSubCategoryId] = useState(null)
+
+	const [showSubCategoryDeleteModal, setShowSubCategoryDeleteModal] =
+		useState(false)
+	const [showEditSubCategoryModal, setShowEditSubCategoryModal] =
+		useState(false)
+
+	const isHideSubCategoryDeleteModalHandler = () => {
+		setShowSubCategoryDeleteModal(false)
+	}
+
+	const showEditSubCategoryModalHandler = () => {
+		setShowEditSubCategoryModal(true)
+	}
+
+	const hideEditSubCategoryModalHandler = () => {
+		setShowEditSubCategoryModal(false)
+	}
+
+	const isShowSubCategoryDeleteModalHandler = () => {
+		setShowSubCategoryDeleteModal(true)
+	}
 
 	// Fetch sub categories
 	useEffect(() => {
@@ -50,8 +72,53 @@ export const SubCategoryProvider = ({ children }) => {
 	// 		})
 	// }, [oneSubCategoryId])
 
-	useEffect(() => {
-		fetch(`http://localhost:4000/subcategories/68ad7b27e6b791de19f2ec81`, {
+	// GET subcategory Id
+	const showDeleteSubCategoryPopupHandler = (id) => {
+		// setIsShowDeletePopup(true)
+		// isShowDeleteModalHandler()
+		// setIsShow(true)
+		setShowSubCategoryDeleteModal(true)
+		fetch(`http://localhost:4000/subcategories/${id}`, {
+			method: 'get',
+			credentials: 'include',
+		})
+			.then((res) => res.json())
+			.then((product) => {
+				// setLoader(false)
+				setOneSubCategoryId(id)
+				console.log('delete id subcategory', id)
+			})
+	}
+
+	// Delete subCategory
+	const deleteSubCategory = (id) => {
+		// setLoader(true)
+		// setSubCategoryId(id)
+		setOneSubCategoryId(id)
+		fetch(`http://localhost:4000/subcategories/${id}`, {
+			method: 'delete',
+			credentials: 'include',
+		})
+			.then((res) => res.json())
+			.then(() => {
+				// setLoader(false)
+				console.log('subcategory delete buttn id', id)
+				setTimeout(() => {
+					window.location.reload()
+				}, 1000)
+
+				// setDeletePopupAlert(true)
+				// setIsDeletePopupAlertMsg('Product deleted Successfully')
+
+				// setTimeout(() => {
+				// 	setDeletePopupAlert(false)
+				// }, 1000)
+			})
+	}
+
+	// GET subcatories of one category
+	const oneCategorySubCategory = (oneSubCategoryId) => {
+		fetch(`http://localhost:4000/subcategories/${oneSubCategoryId}`, {
 			method: 'get',
 			credentials: 'include',
 		})
@@ -59,7 +126,7 @@ export const SubCategoryProvider = ({ children }) => {
 			.then((data) => {
 				setOneSubCategories(data.oneSubCategory.products)
 			})
-	}, [oneSubCategoryId])
+	}
 
 	// Post Sub-Categories
 	const addSubCategories = () => {
@@ -79,6 +146,7 @@ export const SubCategoryProvider = ({ children }) => {
 					.then((res) => res.json())
 					.then((newSubCategories) => {
 						setIsLoading(false)
+						window.location.reload()
 						setSubCategories((prev) => [...prev, newSubCategories])
 					})
 			})
@@ -87,6 +155,8 @@ export const SubCategoryProvider = ({ children }) => {
 	// Fetch one subcategory products
 	const fetchOneSubCategory = (id) => {
 		setIsLoaderSkeleton(true)
+		setOneSubCategoryId(id)
+		setShowEditSubCategoryModal(true)
 		fetch(`http://localhost:4000/subcategories/${id}`, {
 			method: 'get',
 			credentials: 'include',
@@ -95,9 +165,44 @@ export const SubCategoryProvider = ({ children }) => {
 			.then((subcategory) => {
 				setIsLoaderSkeleton(false)
 				setOneSubCategory(subcategory.oneSubCategory)
-				console.log('one sub category', subcategory.oneSubCategory)
+				console.log('fetch one subcategory id', id)
+				// console.log('one sub category name', subcategory.oneSubCategory)
 				setSubCategoryProducts(subcategory.oneSubCategory.products)
 				// window.location.reload();
+			})
+	}
+
+	// Edit one subcategory
+
+	const editOneSubCategory = (id) => {
+		// setIsLoaderSkeleton(true)
+		setIsLoading(true)
+		// setOneSubCategoryId(id)
+		fetch(`http://localhost:4000/subcategories/${id}`, {
+			method: 'put',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name: editSubCategory }),
+			credentials: 'include',
+		})
+			.then((res) => res.json())
+			.then(() => {
+				fetch('http://localhost:4000/subcategories', {
+					method: 'get',
+					credentials: 'include',
+				})
+					.then((res) => res.json())
+					.then((newSubCategory) => {
+						setIsLoading(false)
+						// setCategories([...categories, category])
+						setTimeout(() => {
+							window.location.reload()
+						}, 1000)
+						console.log('edit sub category id', id)
+						setSubCategories((prevSubCategory) => [
+							...prevSubCategory,
+							newSubCategory,
+						])
+					})
 			})
 	}
 
@@ -110,6 +215,7 @@ export const SubCategoryProvider = ({ children }) => {
 				setSubCategory,
 				category,
 				setCategory,
+				deleteSubCategory,
 				oneSubCategory,
 				setOneSubCategory,
 				subCategoryProducts,
@@ -121,8 +227,21 @@ export const SubCategoryProvider = ({ children }) => {
 				setIsLoader,
 				isLoading,
 				setIsLoading,
+				oneSubCategoryId,
 				setOneSubCategoryId,
 				oneSubCategories,
+				oneCategorySubCategory,
+				showDeleteSubCategoryPopupHandler,
+				showSubCategoryDeleteModal,
+				isHideSubCategoryDeleteModalHandler,
+				isShowSubCategoryDeleteModalHandler,
+				editOneSubCategory,
+				editSubCategory,
+				setEditSubCategory,
+				showEditSubCategoryModal,
+				setShowEditSubCategoryModal,
+				showEditSubCategoryModalHandler,
+				hideEditSubCategoryModalHandler,
 			}}
 		>
 			{children}

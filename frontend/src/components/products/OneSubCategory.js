@@ -1,7 +1,7 @@
-import { useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { SubCategoryContext } from '../../context/SubCategoryContext'
 import Skeleton from '@mui/material/Skeleton'
-import { Link } from 'react-router'
+import { Link, useParams } from 'react-router'
 function OneSubCategory() {
 	const {
 		subCategories,
@@ -25,10 +25,36 @@ function OneSubCategory() {
 		setOneSubCategoryId,
 	} = useContext(SubCategoryContext)
 
+	const { subcategoryId } = useParams()
+	const [subCategoryProduct, setSubCategoryProduct] = useState([])
+
+	useEffect(() => {
+		console.log('product filter page subcategory')
+		console.log(subcategoryId)
+	})
+
+	// Fetch one subcategory products
+
+	useEffect(() => {
+		fetch(`http://localhost:4000/subcategories/${subcategoryId}`, {
+			method: 'get',
+			credentials: 'include',
+		})
+			.then((res) => res.json())
+			.then((subcategory) => {
+				setIsLoaderSkeleton(false)
+				setSubCategoryProduct(subcategory.oneSubCategory.products)
+				console.log('fetch one subcategory id', subcategoryId)
+				console.log('one sub category name', subcategory.oneSubCategory)
+				// setSubCategoryProducts(subcategory.oneSubCategory.products)
+				// window.location.reload();
+			})
+	}, [subcategoryId])
+
 	return (
 		<div className="grid grid-cols-2 gap-4 lg:grid-cols-4 w-[80rem] md:grid-cols-4 sm:grid-cols-2 p-4">
 			<>
-				{oneSubCategories.map((product) => (
+				{subCategoryProduct.map((product) => (
 					<div
 						key={product._id}
 						className="grid grid-cols-1 gap-1 md:gap-3 p-4 relative rounded-lg shadow-lg"

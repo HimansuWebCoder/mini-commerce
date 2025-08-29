@@ -363,7 +363,7 @@ function AddProduct({ isShow, setIsShowModal }) {
                                 name="select-category"
                             >
                                 {categories.map((category) => (
-                                    <option value={category._id}>
+                                    <option selected value={category._id}>
                                         {category.name}
                                     </option>
                                 ))}

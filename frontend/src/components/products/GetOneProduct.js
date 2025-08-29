@@ -199,7 +199,7 @@ function GetOneProduct() {
                             <div className="w-full h-fit text-left">
                                 <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">
                                     <h2 className="text-gray-600 font-roboto text-xl font-medium">
-                                        {product.productCategory}
+                                        {product.subcategory?.name}
                                     </h2>
                                 </div>
                             </div>
@@ -347,7 +347,7 @@ function GetOneProduct() {
                             </div>
                             <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">
                                 <p className="text-gray-600 font-roboto text-sm font-medium">
-                                    {product.productCategory}
+                                    {product.subcategory?.name}
                                 </p>
                             </div>
                         </div>
