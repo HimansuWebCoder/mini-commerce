@@ -15,6 +15,23 @@ export const CategoryProvider = ({ children }) => {
 	const [showEditModal, setShowEditModal] = useState(false)
 	const [showDeleteModal, setDeleteShowModal] = useState(false)
 
+	const [imageFile, setImageFile] = useState(null)
+	const [imageUrl, setImageUrl] = useState('')
+	const [imageFileShow, setImageFileShow] = useState(null)
+
+	const [deleteLoader, setDeleteLoader] = useState(false)
+	const [editLoader, setEditLoader] = useState(false)
+	const [addLoader, setAddLoader] = useState(false)
+
+	const handleFileChange = (e) => {
+		setImageFile(e.target.files[0])
+		if (e.target.files[0]) {
+			setImageFileShow(URL.createObjectURL(e.target.files[0]))
+		}
+
+		console.log('image selected', imageFileShow)
+	}
+
 	const isShowDeleteModalHandler = () => {
 		setDeleteShowModal(true)
 	}
@@ -31,30 +48,67 @@ export const CategoryProvider = ({ children }) => {
 	const [isLoader, setIsLoader] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 	const [loader, setLoader] = useState(false)
+	const [error, setError] = useState('')
 
 	// GET category
+	// useEffect(() => {
+	// 	setIsLoader(true)
+	// 	setTimeout(() => {
+	// 		try {
+
+	// 		}
+	// 		const fetchCatgories = async () => {
+	// 			const productCategory = await fetch(
+	// 				'http://localhost:4000/categories',
+	// 				{
+	// 					method: 'get',
+	// 					credentials: 'include',
+	// 				},
+	// 			)
+
+	// 			if (!productCategory.ok) {
+	// 				throw new Error("Server Error")
+	// 			}
+
+	// 			const categoryData = await productCategory.json()
+	// 			setIsLoader(false)
+	// 			setCategories(categoryData.categoriesData)
+	// 			// console.log('filter product', product)
+	// 			// console.log("category products", product);
+	// 			console.log('categorydata', categoryData.categoriesData)
+	// 		}
+
+	// 		fetchCatgories()
+	// 	}, 1000)
+	// }, [])
+
 	useEffect(() => {
 		setIsLoader(true)
-		setTimeout(() => {
-			const fetchCatgories = async () => {
-				const productCategory = await fetch(
-					'http://localhost:4000/categories',
-					{
-						method: 'get',
-						credentials: 'include',
-					},
-				)
 
-				const categoryData = await productCategory.json()
-				setIsLoader(false)
-				setCategories(categoryData.categoriesData)
-				// console.log('filter product', product)
-				// console.log("category products", product);
-				console.log('categorydata', categoryData.categoriesData)
+		const fetchCategories = async () => {
+			try {
+				const res = await fetch('http://localhost:4000/categries', {
+					method: 'GET',
+					credentials: 'include',
+				})
+
+				if (!res.ok) {
+					throw new Error('Server Error')
+				}
+
+				const data = await res.json()
+				setCategories(data.categoriesData)
+			} catch (err) {
+				console.error('Fetch error:', err.message)
+				setError('Something went wrong. Please try again later.')
+			} finally {
+				setIsLoader(false) // always stop loader
 			}
+		}
 
-			fetchCatgories()
-		}, 1000)
+		const timer = setTimeout(fetchCategories, 1000)
+
+		return () => clearTimeout(timer)
 	}, [])
 
 	// GET one Category
@@ -107,12 +161,31 @@ export const CategoryProvider = ({ children }) => {
 	}
 
 	// POST Category
-	const addCategories = () => {
-		setIsLoading(true)
+	const addCategories = async () => {
+		const imageData = new FormData()
+		imageData.append('file', imageFile)
+		imageData.append('upload_preset', 'images')
+
+		const res = await fetch(
+			'https://api.cloudinary.com/v1_1/dtiasevyl/image/upload',
+			{
+				method: 'POST',
+				body: imageData,
+			},
+		)
+
+		const cloudData = await res.json()
+		console.log('Cloudinary URL:', cloudData.secure_url)
+		setImageUrl(cloudData.secure_url)
+
+		setAddLoader(true)
 		fetch('http://localhost:4000/categories', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: category }),
+			body: JSON.stringify({
+				name: category,
+				image: cloudData.secure_url,
+			}),
 			credentials: 'include',
 		})
 			.then((res) => res.json())
@@ -123,26 +196,46 @@ export const CategoryProvider = ({ children }) => {
 				})
 					.then((res) => res.json())
 					.then((newCategory) => {
-						setIsLoading(false)
+						setAddLoader(false)
 						// setCategories([...categories, category])
 						window.location.reload()
-						setCategories((prevCategory) => [
-							...prevCategory,
-							newCategory,
-						])
+						// setCategories((prevCategory) => [
+						// 	...prevCategory,
+						// 	newCategory,
+						// ])
 					})
 			})
 	}
 
 	// UPDATE Category
-	const editOneCategory = (id) => {
-		setIsLoading(true)
+	const editOneCategory = async (id) => {
+		const imageData = new FormData()
+		imageData.append('file', imageFile)
+		imageData.append('upload_preset', 'images')
+		setEditLoader(true)
+
+		const res = await fetch(
+			'https://api.cloudinary.com/v1_1/dtiasevyl/image/upload',
+			{
+				method: 'POST',
+				body: imageData,
+			},
+		)
+
+		const cloudData = await res.json()
+		console.log('Cloudinary URL:', cloudData.secure_url)
+		setImageUrl(cloudData.secure_url)
+
+		// setIsLoading(true)
 		setCategoryId(id)
 		console.log('edit category id', id)
 		fetch(`http://localhost:4000/categories/${id}`, {
 			method: 'put',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: editCategory }),
+			body: JSON.stringify({
+				name: editCategory,
+				image: cloudData.secure_url,
+			}),
 			credentials: 'include',
 		})
 			.then((res) => res.json())
@@ -153,7 +246,8 @@ export const CategoryProvider = ({ children }) => {
 				})
 					.then((res) => res.json())
 					.then((newCategory) => {
-						setIsLoading(false)
+						// setIsLoading(false)
+						setEditLoader(false)
 						// setCategories([...categories, category])
 						window.location.reload()
 						// setCategories((prevCategory) => [
@@ -170,21 +264,27 @@ export const CategoryProvider = ({ children }) => {
 		setShowEditModal(true)
 		setCategoryId(id)
 		// setIsShow(true)
-		fetch(`http://localhost:4000/categories/${id}`, {
-			method: 'get',
-			credentials: 'include',
-		})
-			.then((res) => res.json())
-			.then((product) => {
-				setLoader(false)
-				setCategoryId(id)
-				console.log('category my id', id)
+		setLoader(true)
+		setTimeout(() => {
+			fetch(`http://localhost:4000/categories/${id}`, {
+				method: 'get',
+				credentials: 'include',
 			})
+				.then((res) => res.json())
+				.then((product) => {
+					setLoader(false)
+					setCategoryId(id)
+					setEditCategory(product?.getOneCategory?.name)
+					console.log('category my id', id)
+					console.log('category name', product.getOneCategory?.name)
+				})
+		}, 1000)
 	}
 
 	// Delete Category
 	const deleteCategory = (id) => {
-		setLoader(true)
+		// setLoader(true)
+		setDeleteLoader(true)
 		setCategoryId(id)
 		fetch(`http://localhost:4000/categories/${id}`, {
 			method: 'delete',
@@ -192,12 +292,13 @@ export const CategoryProvider = ({ children }) => {
 		})
 			.then((res) => res.json())
 			.then(() => {
-				setLoader(false)
+				// setLoader(false)
 				console.log('category delete buttn id', id)
 				setTimeout(() => {
 					window.location.reload()
 				}, 1000)
 
+				setDeleteLoader(false)
 				setDeletePopupAlert(true)
 				setIsDeletePopupAlertMsg('Product deleted Successfully')
 
@@ -212,6 +313,7 @@ export const CategoryProvider = ({ children }) => {
 		// setIsShowDeletePopup(true)
 		isShowDeleteModalHandler()
 		// setIsShow(true)
+		// setLoader(true)
 		fetch(`http://localhost:4000/categories/${id}`, {
 			method: 'get',
 			credentials: 'include',
@@ -259,6 +361,14 @@ export const CategoryProvider = ({ children }) => {
 				setShowEditModal,
 				hideEditModalHandler,
 				getOneCategory,
+				handleFileChange,
+				deleteLoader,
+				setDeleteLoader,
+				editLoader,
+				setEditLoader,
+				addLoader,
+				setAddLoader,
+				error,
 			}}
 		>
 			{children}

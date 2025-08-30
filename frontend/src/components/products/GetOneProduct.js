@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
-import { Link } from 'react-router'
+import { Link, useParams, useNavigate } from 'react-router'
 import { IoIosArrowDown } from 'react-icons/io'
+import { IoIosArrowRoundBack } from 'react-icons/io'
 
 import { CiCirclePlus } from 'react-icons/ci'
 import { IoMdClose } from 'react-icons/io'
 import { FaRegEdit } from 'react-icons/fa'
 import { FaCheck } from 'react-icons/fa6'
 import { MdDeleteOutline } from 'react-icons/md'
+import { IoChevronBackOutline } from 'react-icons/io5'
 
 // import PropTypes from 'prop-types';
 // import Card from '@mui/material/Card';
@@ -27,7 +28,9 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Box from '@mui/material/Box'
 
 function GetOneProduct() {
+    const navigate = useNavigate()
     const [product, setProduct] = useState('')
+    const [productsSubCategory, setProductsSubCategory] = useState([])
     const { productId } = useParams()
 
     const [products, setProducts] = useState([])
@@ -82,25 +85,38 @@ function GetOneProduct() {
     }, [])
 
     useEffect(() => {
+        setIsLoading(true)
         fetch(`http://localhost:4000/products/${productId}`, {
             method: 'get',
             credentials: 'include',
         })
             .then((res) => res.json())
             .then((productData) => {
-                setProduct(productData.getProduct)
+                setIsLoading(false)
+                setProduct(productData?.getProduct)
+                setProductsSubCategory(
+                    productData?.getProduct?.subcategory?.products,
+                )
                 console.log('name', productData.productName)
                 console.log('product', productData.getProduct.productName)
                 console.log('product details', productData.getProduct)
                 console.log('products', productData)
+                console.log(
+                    'products subcategory',
+                    productData.getProduct.subcategory.products,
+                )
             })
     }, [productId])
+
+    const filterProduct = productsSubCategory.filter(
+        (item) => item._id !== productId,
+    )
 
     return (
         <div className="max-w-full h-fit bg-[] grid grid-cols-1 gap-2 m-5">
             <div className="flex justify-between max-w-full items-center p-4">
                 <div className="flex gap-2 md:text-base text-sm  max-w-full flex-wrap justify-center items-center">
-                    <div>
+                    {/*<div>
                         <Link
                             to="/"
                             className="text-gray-600 font-medium font-poppins"
@@ -125,7 +141,14 @@ function GetOneProduct() {
                         >
                             Product Details
                         </Link>
-                    </div>
+                    </div>*/}
+                    <button
+                        className="flex justify-center items-center p-2 rounded-lg font-poppins font-medium cursor-pointer hover:bg-gray-100 text-[#44444E]"
+                        onClick={() => navigate(-1)}
+                    >
+                        <IoChevronBackOutline size="20" />
+                        Back
+                    </button>
                 </div>
             </div>
 
@@ -166,17 +189,17 @@ function GetOneProduct() {
                     </>
                 ) : (
                     <>
-                        <div className="col-span-3 flex flex-col bg-[#F5F5F5] justify-center items-center p-4">
-                            <div className="w-fit h-[20rem] aspect-[1/1] flex justify-center items-center">
+                        <div className="col-span-3 flex flex-col bg-[#F5F5F5] rounded-lg cursor-pointer hover:shadow-md justify-center items-center p-4">
+                            <div className="w-fit h-fit aspect-[1/1] flex justify-center items-center">
                                 <img
                                     className="w-full h-full object-contain rounded-lg"
-                                    src={product.productImg}
+                                    src={product?.productImg}
                                     alt="product image"
                                 />
                                 {/* <img className="w-full h-full object-contain rounded-lg" src={isShowImg.src} alt="product image"/> */}
                             </div>
                             <div className="grid grid-cols-4 relative gap-4">
-                                {product.productSubImg.map((img) => (
+                                {product?.productSubImg?.map((img) => (
                                     <div
                                         onClick={isShowImgHandler}
                                         className="w-full h-fit bg-gray-200 aspect-[1/1] flex justify-center items-center"
@@ -199,7 +222,7 @@ function GetOneProduct() {
                             <div className="w-full h-fit text-left">
                                 <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">
                                     <h2 className="text-gray-600 font-roboto text-xl font-medium">
-                                        {product.subcategory?.name}
+                                        {product?.subcategory?.name}
                                     </h2>
                                 </div>
                             </div>
@@ -309,50 +332,56 @@ function GetOneProduct() {
 
             {/* below fetch product details */}
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-2 m-auto p-4">
-                {products.map((product) => (
-                    <div
-                        key={product._id}
-                        className="grid grid-cols-1 gap-1 md:gap-3 p-4 relative rounded-lg shadow-lg"
-                    >
-                        <div className="">
-                            <div className="bg-[#f5f5f5] w-full h-40 rounded-sm aspect-[1/1] relative p-8">
-                                <Link
-                                    to={`/products/${product._id}`}
-                                    className=""
-                                >
-                                    <img
-                                        className="w-full h-full object-contain"
-                                        src={product.productImg}
-                                        alt="product image"
-                                    />
-                                </Link>
-                            </div>
-                        </div>
+                {isLoading ? (
+                    <Skeleton variant="wave" width={300} height={300} />
+                ) : (
+                    <>
+                        {filterProduct?.map((product) => (
+                            <div
+                                key={product?._id}
+                                className="grid grid-cols-1 gap-1 md:gap-3 p-4 relative rounded-lg border"
+                            >
+                                <div className="">
+                                    <div className="bg-[#f5f5f5] w-full h-40 rounded-sm aspect-[1/1] relative p-4">
+                                        <Link
+                                            to={`/products/${product?._id}`}
+                                            className=""
+                                        >
+                                            <img
+                                                className="w-full h-full object-contain"
+                                                src={product?.productImg}
+                                                alt="product image"
+                                            />
+                                        </Link>
+                                    </div>
+                                </div>
 
-                        <div className="w-full text-left line-clamp-2">
-                            <h3 className="text-sm md:text-xl line-clamp-1 md:line-clamp-none text-[#44444E] font-medium font-poppins">
-                                {product.productName}
-                            </h3>
-                        </div>
-                        <div className="flex w-full flex-col justify-between items-start h-auto">
-                            <div className="text-left line-clamp-3">
-                                <p className="text-gray-500 font-poppins tracking-widest">
-                                    ${product.productDescription}
-                                </p>
+                                <div className="w-full text-left line-clamp-2">
+                                    <h3 className="text-sm md:text-xl line-clamp-1 md:line-clamp-none text-[#44444E] font-medium font-poppins">
+                                        {product?.productName}
+                                    </h3>
+                                </div>
+                                <div className="flex w-full flex-col justify-between items-start h-auto">
+                                    <div className="text-left line-clamp-3">
+                                        <p className="text-gray-500 font-poppins tracking-widest">
+                                            ${product?.productDescription}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[#db4444] font-poppins">
+                                            ${product?.productPrice}
+                                        </p>
+                                    </div>
+                                    <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">
+                                        <p className="text-gray-600 font-roboto text-sm font-medium">
+                                            {product?.subcategory?.name}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[#db4444] font-poppins">
-                                    ${product.productPrice}
-                                </p>
-                            </div>
-                            <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">
-                                <p className="text-gray-600 font-roboto text-sm font-medium">
-                                    {product.subcategory?.name}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                        ))}
+                    </>
+                )}
             </div>
         </div>
     )

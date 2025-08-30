@@ -14,11 +14,11 @@ function Modal({
           style={{ backgroundImage: `url("./images/bg.png")` }}
           className="flex justify-center items-center backdrop-filter backdrop-blur-[0.5px] md:p-0 p-2 w-full fixed top-0 left-0 z-20 h-screen"
         >
-          <div className="w-fit h-fit flex justify-center items-center relative m-auto bg-white rounded-lg p-6 md:p-8 shadow-sm">
+          <div className="w-fit h-fit flex border justify-center items-center relative m-auto bg-white rounded-lg p-6 md:p-8">
             {/* Close button */}
             <div
               onClick={isHideModalHandler}
-              className="absolute cursor-pointer top-0 right-0 p-1"
+              className="absolute cursor-pointer  top-0 right-0 p-1"
             >
               <IoMdClose size="30" />
             </div>

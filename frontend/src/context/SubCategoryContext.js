@@ -7,15 +7,30 @@ export const SubCategoryProvider = ({ children }) => {
 	const [subCategories, setSubCategories] = useState([])
 	const [subCategory, setSubCategory] = useState('')
 	const [editSubCategory, setEditSubCategory] = useState('')
-	const [category, setCategory] = useState('')
+	const [category, setCategory] = useState(null)
 	const [oneSubCategory, setOneSubCategory] = useState({})
 	const [subCategoryProducts, setSubCategoryProducts] = useState([])
 	const [isLoaderSkeleton, setIsLoaderSkeleton] = useState(false)
 	const [isLoader, setIsLoader] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 
+	const [subCategoryLoading, setSubCategoryLoading] = useState(false)
+
 	const [oneSubCategories, setOneSubCategories] = useState([])
 	const [oneSubCategoryId, setOneSubCategoryId] = useState(null)
+
+	const [imageFile, setImageFile] = useState(null)
+	const [imageUrl, setImageUrl] = useState('')
+	const [imageFileShow, setImageFileShow] = useState(null)
+
+	const handleFileChange = (e) => {
+		setImageFile(e.target.files[0])
+		if (e.target.files[0]) {
+			setImageFileShow(URL.createObjectURL(e.target.files[0]))
+		}
+
+		console.log('image selected', imageFileShow)
+	}
 
 	const [showSubCategoryDeleteModal, setShowSubCategoryDeleteModal] =
 		useState(false)
@@ -94,6 +109,7 @@ export const SubCategoryProvider = ({ children }) => {
 	const deleteSubCategory = (id) => {
 		// setLoader(true)
 		// setSubCategoryId(id)
+		setIsLoading(false)
 		setOneSubCategoryId(id)
 		fetch(`http://localhost:4000/subcategories/${id}`, {
 			method: 'delete',
@@ -101,6 +117,7 @@ export const SubCategoryProvider = ({ children }) => {
 		})
 			.then((res) => res.json())
 			.then(() => {
+				setIsLoading(true)
 				// setLoader(false)
 				console.log('subcategory delete buttn id', id)
 				setTimeout(() => {
@@ -129,12 +146,32 @@ export const SubCategoryProvider = ({ children }) => {
 	}
 
 	// Post Sub-Categories
-	const addSubCategories = () => {
+	const addSubCategories = async () => {
+		const imageData = new FormData()
+		imageData.append('file', imageFile)
+		imageData.append('upload_preset', 'images')
+
+		const res = await fetch(
+			'https://api.cloudinary.com/v1_1/dtiasevyl/image/upload',
+			{
+				method: 'POST',
+				body: imageData,
+			},
+		)
+
+		const cloudData = await res.json()
+		console.log('Cloudinary URL:', cloudData.secure_url)
+		setImageUrl(cloudData.secure_url)
+
 		setIsLoading(true)
 		fetch('http://localhost:4000/subcategories', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: subCategory, category }),
+			body: JSON.stringify({
+				name: subCategory,
+				category: category,
+				image: cloudData.secure_url,
+			}),
 			credentials: 'include',
 		})
 			.then((res) => res.json())
@@ -147,7 +184,7 @@ export const SubCategoryProvider = ({ children }) => {
 					.then((newSubCategories) => {
 						setIsLoading(false)
 						window.location.reload()
-						setSubCategories((prev) => [...prev, newSubCategories])
+						setSubCategories(newSubCategories)
 					})
 			})
 	}
@@ -165,7 +202,12 @@ export const SubCategoryProvider = ({ children }) => {
 			.then((subcategory) => {
 				setIsLoaderSkeleton(false)
 				setOneSubCategory(subcategory.oneSubCategory)
+				setEditSubCategory(subcategory.oneSubCategory?.name)
 				console.log('fetch one subcategory id', id)
+				console.log(
+					'fetch one subcategory name',
+					subcategory.oneSubCategory?.name,
+				)
 				// console.log('one sub category name', subcategory.oneSubCategory)
 				setSubCategoryProducts(subcategory.oneSubCategory.products)
 				// window.location.reload();
@@ -174,14 +216,34 @@ export const SubCategoryProvider = ({ children }) => {
 
 	// Edit one subcategory
 
-	const editOneSubCategory = (id) => {
+	const editOneSubCategory = async (id) => {
 		// setIsLoaderSkeleton(true)
+
+		const imageData = new FormData()
+		imageData.append('file', imageFile)
+		imageData.append('upload_preset', 'images')
+
+		const res = await fetch(
+			'https://api.cloudinary.com/v1_1/dtiasevyl/image/upload',
+			{
+				method: 'POST',
+				body: imageData,
+			},
+		)
+
+		const cloudData = await res.json()
+		console.log('Cloudinary URL:', cloudData.secure_url)
+		setImageUrl(cloudData.secure_url)
+
 		setIsLoading(true)
 		// setOneSubCategoryId(id)
 		fetch(`http://localhost:4000/subcategories/${id}`, {
 			method: 'put',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: editSubCategory }),
+			body: JSON.stringify({
+				name: editSubCategory,
+				image: cloudData.secure_url,
+			}),
 			credentials: 'include',
 		})
 			.then((res) => res.json())
@@ -198,10 +260,10 @@ export const SubCategoryProvider = ({ children }) => {
 							window.location.reload()
 						}, 1000)
 						console.log('edit sub category id', id)
-						setSubCategories((prevSubCategory) => [
-							...prevSubCategory,
-							newSubCategory,
-						])
+						// setSubCategories((prevSubCategory) => [
+						// 	...prevSubCategory,
+						// 	newSubCategory,
+						// ])
 					})
 			})
 	}
@@ -242,6 +304,7 @@ export const SubCategoryProvider = ({ children }) => {
 				setShowEditSubCategoryModal,
 				showEditSubCategoryModalHandler,
 				hideEditSubCategoryModalHandler,
+				handleFileChange,
 			}}
 		>
 			{children}

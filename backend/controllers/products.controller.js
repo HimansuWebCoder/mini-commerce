@@ -34,7 +34,17 @@ async function getOneProduct(req, res) {
     // const getProduct = await Products.findById(id);
     const getProduct = await Products.findById(id)
         .populate('category')
-        .populate('subcategory')
+        .populate({
+            path: 'subcategory',
+            populate: {
+                path: 'products',
+                populate: {
+                    path: 'subcategory',
+                    select: 'name',
+                },
+                // select: 'productName ',
+            },
+        })
 
     if (getProduct) {
         return res.status(200).json({ getProduct })

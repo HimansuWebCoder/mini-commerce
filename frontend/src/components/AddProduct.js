@@ -50,21 +50,29 @@ function AddProduct({ isShow, setIsShowModal }) {
     const [isShowCategory, setIsShowCategory] = useState(false)
 
     function addProduct(e) {
-        setProductName(e.target.value)
+        const input = e.target.value
+        const formattedInput = input.charAt(0).toUpperCase() + input.slice(1)
+        setProductName(formattedInput)
     }
 
     function addProductCategory(e) {
-        setProductCategory(e.target.value)
+        const input = e.target.value
+        const formattedInput = input.charAt(0).toUpperCase() + input.slice(1)
+        setProductCategory(formattedInput)
         console.log('target value', e.target.value)
     }
 
     function addProductSubCategory(e) {
-        setProductSubCategory(e.target.value)
+        const input = e.target.value
+        const formattedInput = input.charAt(0).toUpperCase() + input.slice(1)
+        setProductSubCategory(formattedInput)
         console.log('target value', e.target.value)
     }
 
     function addProductPrice(e) {
-        setProductPrice(e.target.value)
+        const input = e.target.value
+        const formattedInput = input.charAt(0).toUpperCase() + input.slice(1)
+        setProductPrice(formattedInput)
     }
 
     function addProductImg(e) {
@@ -277,9 +285,13 @@ function AddProduct({ isShow, setIsShowModal }) {
                                 row="10"
                                 type="text"
                                 value={productDescription}
-                                onChange={(e) =>
-                                    setProductDescription(e.target.value)
-                                }
+                                onChange={(e) => {
+                                    const input = e.target.value
+                                    const formattedInput =
+                                        input.charAt(0).toUpperCase() +
+                                        input.slice(1)
+                                    setProductDescription(formattedInput)
+                                }}
                                 placeholder="Product Description"
                                 className="bg-gray-100 text-black border h-full text-gray-400 focus:outline-red-300 w-full text-sm font-poppins rounded-lg p-2"
                                 id="productdescription"
@@ -362,9 +374,9 @@ function AddProduct({ isShow, setIsShowModal }) {
                                 id="select-category"
                                 name="select-category"
                             >
-                                {categories.map((category) => (
-                                    <option selected value={category._id}>
-                                        {category.name}
+                                {categories?.map((category) => (
+                                    <option selected value={category?._id}>
+                                        {category?.name}
                                     </option>
                                 ))}
                             </select>

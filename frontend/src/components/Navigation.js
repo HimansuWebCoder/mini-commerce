@@ -36,6 +36,10 @@ function Navigation() {
             <div className="rounded-lg p-2 border border-gray-400 hover:bg-[#2C4E80] text-white cursor-pointer text-xl font-opensans font-bold">
               <Link to="/category">Category</Link>
             </div>
+
+            <div className="rounded-lg p-2 border border-gray-400 hover:bg-[#2C4E80] text-white cursor-pointer text-xl font-opensans font-bold">
+              <Link to="/subcategory">SubCategory</Link>
+            </div>
           </div>
         </div>
       </div>

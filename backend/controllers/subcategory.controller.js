@@ -5,7 +5,7 @@ const { Category } = require('../models/category.model.js')
 const createSubCategory = async (req, res) => {
   try {
     const subCategory = await SubCategory.create(req.body)
-
+    console.log(req.body)
     await Category.findByIdAndUpdate(
       subCategory.category,
       { $push: { subcategories: subCategory._id } },
@@ -22,6 +22,7 @@ const createSubCategory = async (req, res) => {
     }
 
     res.status(500).json({ error: err.message })
+    console.log(err.message)
   }
 }
 

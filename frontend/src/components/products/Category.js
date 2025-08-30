@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react'
-import { IoAddSharp } from 'react-icons/io5'
 import Skeleton from '@mui/material/Skeleton'
 import Modal from '../ui/Modal'
 import SubCategory from './SubCategory'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Spin } from 'antd'
 import { Outlet } from 'react-router'
 
+// icons
+import { IoIosArrowRoundBack } from 'react-icons/io'
+import { IoIosArrowRoundForward } from 'react-icons/io'
+import { MdOutlineCategory } from 'react-icons/md'
 import { FaRegEdit } from 'react-icons/fa'
 import { MdDeleteOutline } from 'react-icons/md'
+import { IoAddSharp } from 'react-icons/io5'
+import { IoChevronBackOutline } from 'react-icons/io5'
 
 import { useContext } from 'react'
 import { CategoryContext } from '../../context/CategoryContext'
 
 function Category() {
+    const navigate = useNavigate()
     const {
         categories,
         category,
@@ -46,6 +52,14 @@ function Category() {
         showEditModal,
         setShowEditModal,
         hideEditModalHandler,
+        handleFileChange,
+        deleteLoader,
+        setDeleteLoader,
+        editLoader,
+        setEditLoader,
+        addLoader,
+        setAddLoader,
+        error,
     } = useContext(CategoryContext)
 
     // const [products, setProducts] = useState([])
@@ -53,6 +67,10 @@ function Category() {
     const [selectCategory, setSelectCategory] = useState('')
     const [subCategory, setSubCategory] = useState('')
 
+    // function setCategoryId(e) {
+    //     setCategoryId(e.target.value)
+    //     console.log('category id', e.target.value)
+    // }
     // const [categoryId, setCategoryId] = useState(null)
 
     // Category products filter States
@@ -138,9 +156,9 @@ function Category() {
     }, [])
 
     return (
-        <div className=" w-fit grid  grid-cols-1 gap-4 w-full h-full place-content-center place-items-center">
-            <div className="grid grid-cols-1 w-full h-full p-4 gap-4 place-content-center place-items-center">
-                <div className="font-poppins text-2xl border-b text-[#44444E] w-full flex justify-between items-center p-2 font-medium">
+        <div className=" w-fit grid  py-4 grid-cols-1 gap-4 w-full h-full place-content-center place-items-center">
+            <div className="grid grid-cols-1 w-full h-full  p-4 gap-4 place-content-center place-items-center">
+                <div className="font-poppins text-2xl border-b text-[#44444E] w-full flex justify-between items-center py-2">
                     <h1 className="font-poppins text-3xl text-[#44444E] flex justify-start font-medium">
                         Explore by Categories
                     </h1>
@@ -148,7 +166,7 @@ function Category() {
                     <div className="flex gap-2 items-center justify-end">
                         <button
                             onClick={isShowModalHandler}
-                            className="flex font-base rounded-lg bg-[#EFEFEF] p-2 hover:text-white hover:bg-[#689B8A] font-poppins text-xl text-[#44444E] justify-center items-center"
+                            className="flex items-center text-xl font-opensans gap-2 bg-[#EFEEEA] hover:bg-gray-200 text-[#273F4F] font-semibold py-2 px-4 rounded-lg transition-colors duration-300"
                         >
                             <IoAddSharp size="20" className="" />
                             Add category
@@ -157,7 +175,7 @@ function Category() {
                 </div>
 
                 <div className="w-full flex gap-2">
-                    <Link
+                    {/* <Link
                         to="/"
                         className="text-gray-600 font-medium font-poppins"
                     >
@@ -176,23 +194,49 @@ function Category() {
                         className="text-gray-600 font-medium font-poppins"
                     >
                         Category
-                    </Link>
+                    </Link>*/}
+                    <button
+                        className="flex justify-center items-center p-2 rounded-lg font-poppins font-medium cursor-pointer hover:bg-gray-100 text-[#44444E]"
+                        onClick={() => navigate(-1)}
+                    >
+                        <IoChevronBackOutline size="20" />
+                        Back
+                    </button>
                 </div>
 
                 <div className="flex w-full gap-4 items-center justify-start [&::-webkit-scrollbar]:hidden  overflow-x-auto">
                     {isLoader ? (
-                        <div className="w-full h-full grid grid-cols-4 gap-4">
+                        <div className="flex gap-2 flex-wrap">
                             <Skeleton
                                 variant="rounded"
-                                width={300}
-                                height={300}
+                                width={180}
+                                height={180}
+                            />
+                            <Skeleton
+                                variant="rounded"
+                                width={180}
+                                height={180}
+                            />
+                            <Skeleton
+                                variant="rounded"
+                                width={180}
+                                height={180}
+                            />
+                            <Skeleton
+                                variant="rounded"
+                                width={180}
+                                height={180}
                             />
                         </div>
                     ) : (
-                        <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
+                        <div className="w-full relative h-full grid grid-cols-2 md:grid-cols-7 gap-4 p-4">
+                            <p className="absolute top-0 m-auto z-10">
+                                {error}
+                            </p>
                             {categories.map((category) => (
+                                // <Link to={`/category/${category._id}`}>
                                 <div
-                                    className="flex relative rounded-lg justify-center  items-center"
+                                    className="flex relative w-40 h-40 rounded-lg justify-center  items-center"
                                     key={category._id}
                                 >
                                     <div
@@ -201,16 +245,13 @@ function Category() {
                                         }
                                         className="font-poppins justify-center focus:bg-[#73C7C7] items-center gap-2 flex-col flex cursor-pointer hover:shadow-lg  rounded-lg w-full h-full aspect-[1/1] p-2 font-normal border"
                                     >
-                                        <div className="max-w-40  h-40">
-                                            <Link
-                                                to={`/category/${category._id}`}
-                                            >
-                                                <img
-                                                    className="w-full h-full object-contain"
-                                                    src="/images/category.png"
-                                                    alt="shop"
-                                                />
-                                            </Link>
+                                        <div className="w-20  h-20 rounded-full">
+                                            <img
+                                                className="w-full h-full rounded-full object-cover"
+                                                // src="/images/category.png"
+                                                src={category?.image}
+                                                alt="shop"
+                                            />
                                         </div>
                                         <h1 className="font-poppins  text-[#173B45] text-2xl font-normal">
                                             {category.name}
@@ -261,17 +302,46 @@ function Category() {
                                                 >
                                                     Edit Category
                                                 </label>
+                                                {loader ? (
+                                                    <Skeleton
+                                                        variant="rounded"
+                                                        width={320}
+                                                        height={40}
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={editCategory}
+                                                        onChange={(e) => {
+                                                            const inputEditCategory =
+                                                                e.target.value
+                                                            const formattedEditCategoryInput =
+                                                                inputEditCategory
+                                                                    .charAt(0)
+                                                                    .toUpperCase() +
+                                                                inputEditCategory.slice(
+                                                                    1,
+                                                                )
+                                                            setEditCategory(
+                                                                formattedEditCategoryInput,
+                                                            )
+                                                        }}
+                                                        placeholder="Product Category"
+                                                        className="bg-gray-100 text-black border text-gray-400 focus:outline-red-300 w-full text-sm font-poppins rounded-lg p-2"
+                                                        id="productCategory"
+                                                    />
+                                                )}
+                                                <label
+                                                    className="font-inter text-xl text-red-400 font-medium"
+                                                    htmlFor="productCategory"
+                                                >
+                                                    Edit Image
+                                                </label>
                                                 <input
-                                                    type="text"
-                                                    value={editCategory}
-                                                    onChange={(e) =>
-                                                        setEditCategory(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="Product Category"
+                                                    type="file"
+                                                    onChange={handleFileChange}
                                                     className="bg-gray-100 text-black border text-gray-400 focus:outline-red-300 w-full text-sm font-poppins rounded-lg p-2"
-                                                    id="productCategory"
+                                                    id="productimg"
                                                 />
                                                 {/*<div className="w-full border flex justify-end items-center">*/}
                                                 <div className="w-full grid grid-cols-1 place-content-center place-items-end">
@@ -284,7 +354,7 @@ function Category() {
                                                         >
                                                             Cancel
                                                         </button>
-                                                        {isLoading ? (
+                                                        {editLoader ? (
                                                             <button
                                                                 onClick={() =>
                                                                     editOneCategory(
@@ -339,7 +409,7 @@ function Category() {
                                                     <button className="font-poppins text-xl border rounded-lg font-medium  h-fit p-2">
                                                         Cancel
                                                     </button>
-                                                    {loader ? (
+                                                    {deleteLoader ? (
                                                         <button
                                                             className="font-poppins text-xl flex justify-center items-center gap-2 bg-red-500 rounded-lg text-white font-medium h-fit p-2"
                                                             onClick={() =>
@@ -367,6 +437,7 @@ function Category() {
                                         }
                                     />
                                 </div>
+                                // </Link>
                             ))}
                         </div>
                     )}
@@ -387,14 +458,32 @@ function Category() {
                             <input
                                 type="text"
                                 value={category}
-                                onChange={(e) => setCategory(e.target.value)}
+                                onChange={(e) => {
+                                    const inputCategory = e.target.value
+                                    const formattedCategoryInput =
+                                        inputCategory.charAt(0).toUpperCase() +
+                                        inputCategory.slice(1)
+                                    setCategory(formattedCategoryInput)
+                                }}
                                 placeholder="Product Category"
                                 className="bg-gray-100 text-black border text-gray-400 focus:outline-red-300 w-full text-sm font-poppins rounded-lg p-2"
                                 id="productCategory"
                             />
+                            <label
+                                className="font-inter text-xl text-red-400 font-medium"
+                                htmlFor="productCategory"
+                            >
+                                Add Image
+                            </label>
+                            <input
+                                type="file"
+                                onChange={handleFileChange}
+                                className="bg-gray-100 text-black border text-gray-400 focus:outline-red-300 w-full text-sm font-poppins rounded-lg p-2"
+                                id="productimg"
+                            />
                             {/*<div className="w-full border flex justify-end items-center">*/}
                             <div className="w-full grid grid-cols-1 place-content-center place-items-end">
-                                {isLoading ? (
+                                {addLoader ? (
                                     <div className="flex justify-center items-center gap-2">
                                         <button
                                             onClick={addCategories}
@@ -416,72 +505,7 @@ function Category() {
                         </div>
                     }
                 />
-
-                {/*  <div className="grid grid-cols-2 m-auto p-4 border w-[500px]">
-              
-                {
-                    filterCategory.map((product) => (
-                                     
-                                        <div key={product._id} className="grid grid-cols-1 gap-1 md:gap-3 p-4 relative rounded-lg shadow-lg">
-                                     
-                                               <div className="">
-
-                                                <div className="bg-[#f5f5f5] w-full h-40 rounded-sm aspect-[1/1] relative p-8">
-                                                    <Link to={`/products/${product._id}`} className="">
-                                                        <img className="w-full h-full object-contain" src={product.productImg} alt="product image"/>
-                                                    </Link>
-                                                </div>
-                                              </div>
-                                           
-                                        
-                                       <div className="w-full text-left line-clamp-2">
-                                           <h3 className="text-sm md:text-xl line-clamp-1 md:line-clamp-none text-[#44444E] font-medium font-poppins">{product.productName}</h3>
-                                       </div>
-                                       <div className="flex w-full flex-col justify-between items-start h-auto">
-                                           <div className="text-left line-clamp-3">
-                                               <p className="text-gray-500 font-poppins tracking-widest">${product.productDescription}</p>
-                                           </div>
-                                            <div>
-                                               <p className="text-[#db4444] font-poppins">${product.productPrice}</p>
-                                           </div>
-                                           <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">
-                                               <p className="text-gray-600 font-roboto text-sm font-medium">{product.productCategory}</p>
-                                           </div>
-                                       </div>
-                                     </div>
-                         ))
-                }
-                </div>*/}
             </div>
-
-            {/*{
-            isLoader ? (
-                <>
-                <Skeleton variant="rounded" width={80} height={40} />
-                <Skeleton variant="rounded" width={80} height={40} />
-                <Skeleton variant="rounded" width={80} height={40} />
-                <Skeleton variant="rounded" width={80} height={40} />
-                <Skeleton variant="rounded" width={80} height={40} />
-                <Skeleton variant="rounded" width={80} height={40} />
-                <Skeleton variant="rounded" width={80} height={40} />
-                <Skeleton variant="rounded" width={80} height={40} />
-                <Skeleton variant="rounded" width={80} height={40} />
-                </>
-                ) : (
-                   <div className="w-full grid grid-cols-4 gap-4">
-                     {
-            subCategories?.map(subcategory => (
-                   <div key={subcategory._id} className="w-full flex justify-end items-center">
-                     <button className="ffont-poppins rounded-lg w-full p-2 text-[#173B45] font-poppins text-2xl font-medium shadow-md border">{subcategory.name}</button>
-                
-                  </div>
-            )   )
-          }
-
-                   </div>
-                )
-         }*/}
-            {/*<SubCategory />*/}
 
             <Outlet />
         </div>

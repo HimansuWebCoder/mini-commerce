@@ -78,6 +78,8 @@ function ProductCardContainer(props) {
     const [isShowProductModal, setIsShowProductModal] = useState(true)
     const [showDelProductId, setShowDelProductId] = useState(null)
 
+    const [showProductEditModal, setShowProductEditModal] = useState(false)
+
     function isHideModalHandler() {
         setIsShow(false)
     }
@@ -87,6 +89,9 @@ function ProductCardContainer(props) {
         setIsShowProductModal(false)
     }
 
+    useEffect(() => {
+        console.log('important categories', categories)
+    })
     function showDeletePopupHandler(id) {
         setIsShowDeletePopup(true)
         setShowDelProductId(id)
@@ -112,6 +117,7 @@ function ProductCardContainer(props) {
     function isShowHandler(id) {
         setIsShowModalId(id)
         setIsShowProductModal(true)
+        setShowProductEditModal(true)
         fetch(`http://localhost:4000/products/${id}`, {
             method: 'get',
             credentials: 'include',
@@ -119,6 +125,7 @@ function ProductCardContainer(props) {
             .then((res) => res.json())
             .then((product) => {
                 setLoader(false)
+                setShowProductEditModal(false)
                 setEditProductName(product.getProduct.productName)
                 // console.log(product.getProduct.productName);
                 setEditProductCategory(product.getProduct.productCategory)
@@ -151,7 +158,7 @@ function ProductCardContainer(props) {
     }
 
     return (
-        <div className="grid grid-cols-1 place-content-center place-items-center md:place-items-end sm:grid-cols-2 md:grid-cols-1 p-4 gap-4 w-full">
+        <div className="grid grid-cols-1 place-content-center place-items-center md:place-items-end sm:grid-cols-2 md:grid-cols-1 px-4 gap-4 w-full">
             <div className="w-full flex justify-end">
                 <AddProductBtn />
             </div>
@@ -166,8 +173,7 @@ function ProductCardContainer(props) {
                         }}
                     >
                         <div className="grid grid-cols-1 relative rounded-lg">
-                            {showModalId === product._id &&
-                            isShowProductModal ? (
+                            {showModalId === product._id ? (
                                 <div
                                     style={{
                                         backgroundImage: `url("./images/bg.png")`,
@@ -192,18 +198,35 @@ function ProductCardContainer(props) {
                                                 >
                                                     Name
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    value={editProductName}
-                                                    onChange={(e) =>
-                                                        setEditProductName(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="Product Name"
-                                                    className="bg-gray-50 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
-                                                    id="productname"
-                                                />
+                                                {showProductEditModal ? (
+                                                    <Skeleton
+                                                        variant="rounded"
+                                                        width={300}
+                                                        height={40}
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={editProductName}
+                                                        onChange={(e) => {
+                                                            const inputProductName =
+                                                                e.target.value
+                                                            const formattedInputProductName =
+                                                                inputProductName
+                                                                    .charAt(0)
+                                                                    .toUpperCase() +
+                                                                inputProductName.slice(
+                                                                    1,
+                                                                )
+                                                            setEditProductName(
+                                                                formattedInputProductName,
+                                                            )
+                                                        }}
+                                                        placeholder="Product Name"
+                                                        className="bg-gray-50 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
+                                                        id="productname"
+                                                    />
+                                                )}
                                             </div>
 
                                             <div className="flex flex-col w-full justify-center gap-2 items-start">
@@ -213,20 +236,37 @@ function ProductCardContainer(props) {
                                                 >
                                                     Description
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    value={
-                                                        editProductDescription
-                                                    }
-                                                    onChange={(e) =>
-                                                        setEditProductDescription(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="Product Description"
-                                                    className="bg-gray-50 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
-                                                    id="productdescription"
-                                                />
+                                                {showProductEditModal ? (
+                                                    <Skeleton
+                                                        variant="rounded"
+                                                        width={300}
+                                                        height={40}
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={
+                                                            editProductDescription
+                                                        }
+                                                        onChange={(e) => {
+                                                            const inputDescription =
+                                                                e.target.value
+                                                            const formattedInputDescription =
+                                                                inputDescription
+                                                                    .charAt(0)
+                                                                    .toUpperCase() +
+                                                                inputDescription.slice(
+                                                                    1,
+                                                                )
+                                                            setEditProductDescription(
+                                                                formattedInputDescription,
+                                                            )
+                                                        }}
+                                                        placeholder="Product Description"
+                                                        className="bg-gray-50 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
+                                                        id="productdescription"
+                                                    />
+                                                )}
                                             </div>
 
                                             <div className=" flex flex-col w-full  justify-center gap-2 items-start">
@@ -236,18 +276,26 @@ function ProductCardContainer(props) {
                                                 >
                                                     Price
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    value={editProductPrice}
-                                                    onChange={(e) =>
-                                                        setEditProductPrice(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="Product Price"
-                                                    className="bg-gray-50 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
-                                                    id="productprice"
-                                                />
+                                                {showProductEditModal ? (
+                                                    <Skeleton
+                                                        variant="rounded"
+                                                        width={300}
+                                                        height={40}
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={editProductPrice}
+                                                        onChange={(e) =>
+                                                            setEditProductPrice(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder="Product Price"
+                                                        className="bg-gray-50 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
+                                                        id="productprice"
+                                                    />
+                                                )}
                                             </div>
                                             <div className=" flex flex-col w-full  justify-center gap-2 items-start">
                                                 <label
@@ -256,20 +304,28 @@ function ProductCardContainer(props) {
                                                 >
                                                     Original Price
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    value={
-                                                        editProductOriginalPrice
-                                                    }
-                                                    onChange={(e) =>
-                                                        setEditProductOriginalPrice(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="Product Original Price"
-                                                    className="bg-gray-100 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
-                                                    id="productOriginalprice"
-                                                />
+                                                {showProductEditModal ? (
+                                                    <Skeleton
+                                                        variant="rounded"
+                                                        width={300}
+                                                        height={40}
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={
+                                                            editProductOriginalPrice
+                                                        }
+                                                        onChange={(e) =>
+                                                            setEditProductOriginalPrice(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder="Product Original Price"
+                                                        className="bg-gray-100 text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
+                                                        id="productOriginalprice"
+                                                    />
+                                                )}
                                             </div>
                                             <div className=" flex flex-col w-full  justify-center gap-2 items-start">
                                                 <label
@@ -278,18 +334,26 @@ function ProductCardContainer(props) {
                                                 >
                                                     Discount
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    value={editDiscount}
-                                                    onChange={(e) =>
-                                                        setEditDiscount(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="Product Discount"
-                                                    className="bg-gray-50  text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
-                                                    id="discount"
-                                                />
+                                                {showProductEditModal ? (
+                                                    <Skeleton
+                                                        variant="rounded"
+                                                        width={300}
+                                                        height={40}
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={editDiscount}
+                                                        onChange={(e) =>
+                                                            setEditDiscount(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder="Product Discount"
+                                                        className="bg-gray-50  text-black border text-gray-400 focus:outline-red-400 w-full text-sm font-poppins rounded-lg p-2"
+                                                        id="discount"
+                                                    />
+                                                )}
                                             </div>
 
                                             <div className="flex flex-col w-full h-fit  justify-center gap-2 items-start">
@@ -299,40 +363,52 @@ function ProductCardContainer(props) {
                                                 >
                                                     Categories
                                                 </label>
-                                                <select
-                                                    className="w-full rounded-lg h-fit p-2 focus:outline-red-400"
-                                                    onChange={(e) =>
-                                                        setEditProductCategory(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    value={editProductCategory}
-                                                    id="select-category"
-                                                    name="select-category"
-                                                    defaultValue={
-                                                        product?.category?._id
-                                                    }
-                                                >
-                                                    <option
-                                                        value=""
-                                                        defaultValue
+                                                {showProductEditModal ? (
+                                                    <Skeleton
+                                                        variant="rounded"
+                                                        width={300}
+                                                        height={40}
+                                                    />
+                                                ) : (
+                                                    <select
+                                                        className="w-full rounded-lg h-fit p-2 focus:outline-red-400"
+                                                        onChange={(e) =>
+                                                            setEditProductCategory(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        value={
+                                                            editProductCategory
+                                                        }
+                                                        id="select-category"
+                                                        name="select-category"
+                                                        defaultValue={
+                                                            product?.category
+                                                                ?._id
+                                                        }
                                                     >
-                                                        Select Category
-                                                    </option>
-                                                    {categories.map(
-                                                        (category) => (
-                                                            <option
-                                                                selected
-                                                                value={
-                                                                    category?._id
-                                                                }
-                                                            >
-                                                                {category?.name}
-                                                            </option>
-                                                        ),
-                                                    )}
+                                                        <option
+                                                            value=""
+                                                            defaultValue
+                                                        >
+                                                            Select Category
+                                                        </option>
+                                                        {categories.map(
+                                                            (category) => (
+                                                                <option
+                                                                    selected
+                                                                    value={
+                                                                        category?._id
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        category?.name
+                                                                    }
+                                                                </option>
+                                                            ),
+                                                        )}
 
-                                                    {/*<option
+                                                        {/*<option
                                                         value={
                                                             product?.category
                                                                 ?._id
@@ -343,7 +419,8 @@ function ProductCardContainer(props) {
                                                                 ?.name
                                                         }
                                                     </option>*/}
-                                                </select>
+                                                    </select>
+                                                )}
 
                                                 <div className="flex flex-col w-full h-fit  justify-center gap-2 items-start">
                                                     <label
@@ -352,51 +429,59 @@ function ProductCardContainer(props) {
                                                     >
                                                         Sub Category
                                                     </label>
-                                                    <select
-                                                        className="w-full rounded-lg h-fit p-2 focus:outline-red-400"
-                                                        onChange={(e) =>
-                                                            setEditProductSubCategory(
-                                                                e.target.value,
-                                                            )
-                                                        }
-                                                        value={
-                                                            editProductSubCategory
-                                                        }
-                                                        id="select-category"
-                                                        name="select-category"
-                                                        defaultValue={
-                                                            product?.subcategory
-                                                                ?._id
-                                                        }
-                                                    >
-                                                        <option
-                                                            value=""
-                                                            defaultValue={
-                                                                product
-                                                                    ?.subcategory
-                                                                    ?._id
+                                                    {showProductEditModal ? (
+                                                        <Skeleton
+                                                            variant="rounded"
+                                                            width={300}
+                                                            height={40}
+                                                        />
+                                                    ) : (
+                                                        <select
+                                                            className="w-full rounded-lg h-fit p-2 focus:outline-red-400"
+                                                            onChange={(e) =>
+                                                                setEditProductSubCategory(
+                                                                    e.target
+                                                                        .value,
+                                                                )
                                                             }
+                                                            value={
+                                                                editProductSubCategory
+                                                            }
+                                                            id="select-category"
+                                                            name="select-category"
+                                                            defaultValue
                                                         >
-                                                            Select SubCategory
-                                                        </option>
-                                                        {subCategories.map(
-                                                            (subcategory) => (
-                                                                <option
-                                                                    key={
-                                                                        subcategory?._id
-                                                                    }
-                                                                    value={
-                                                                        subcategory?._id
-                                                                    }
-                                                                >
-                                                                    {
-                                                                        subcategory?.name
-                                                                    }
-                                                                </option>
-                                                            ),
-                                                        )}
+                                                            <option
+                                                                value=""
+                                                                defaultValue={
+                                                                    product
+                                                                        ?.subcategory
+                                                                        ?._id
+                                                                }
+                                                            >
+                                                                Select
+                                                                SubCategory
+                                                            </option>
+                                                            {subCategories?.map(
+                                                                (
+                                                                    subcategory,
+                                                                ) => (
+                                                                    <option
+                                                                        key={
+                                                                            subcategory?._id
+                                                                        }
+                                                                        value={
+                                                                            subcategory?._id
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            subcategory?.name
+                                                                        }
+                                                                    </option>
+                                                                ),
+                                                            )}
 
-                                                        {/*<option
+                                                            {/*<option
                                                             value={
                                                                 product
                                                                     ?.subcategory
@@ -409,7 +494,8 @@ function ProductCardContainer(props) {
                                                                     ?.name
                                                             }
                                                         </option>*/}
-                                                    </select>
+                                                        </select>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -484,7 +570,7 @@ function ProductCardContainer(props) {
                                     <button
                                         className="w-fit flex justify-center items-center h-fit absolute top-4 right-2 z-10 cursor-pointer text-white p-1 rounded-lg"
                                         onClick={() =>
-                                            isShowHandler(product._id)
+                                            isShowHandler(product?._id)
                                         }
                                     >
                                         <FaRegEdit
@@ -501,7 +587,7 @@ function ProductCardContainer(props) {
                                     <button
                                         className="w-fit flex justify-center items-center h-fit p-1 z-10 cursor-pointer rounded-lg text-white flex gap-2 absolute top-10 right-1 justify-center items-center font-medium"
                                         onClick={() =>
-                                            showDeletePopupHandler(product._id)
+                                            showDeletePopupHandler(product?._id)
                                         }
                                     >
                                         <MdDeleteOutline
@@ -531,12 +617,12 @@ function ProductCardContainer(props) {
                         ) : (
                             <div className="bg-[#f5f5f5] h-[12rem] p-6 w-full rounded-sm aspect-[1/1] relative">
                                 <Link
-                                    to={`/products/${product._id}`}
+                                    to={`/products/${product?._id}`}
                                     className=""
                                 >
                                     <img
                                         className="w-full h-full object-contain"
-                                        src={product.productImg}
+                                        src={product?.productImg}
                                         alt="product image"
                                     />
                                 </Link>
@@ -554,7 +640,7 @@ function ProductCardContainer(props) {
                             ) : (
                                 <div className="w-full text-left line-clamp-1">
                                     <h3 className="text-sm md:text-xl line-clamp-1 text-[#44444E] font-poppins ">
-                                        {product.productName}
+                                        {product?.productName}
                                     </h3>
                                 </div>
                             )}
@@ -579,23 +665,23 @@ function ProductCardContainer(props) {
                                 <div className="flex w-full flex-col justify-between gap-2 items-start h-auto ">
                                     <div className="text-left line-clamp-3">
                                         <p className="text-gray-500 font-poppins">
-                                            ${product.productDescription}
+                                            ${product?.productDescription}
                                         </p>
                                     </div>
                                     <div className="flex justify-center items-center gap-2">
                                         <p className="text-[#db4444] font-poppins">
-                                            ${product.productPrice}
+                                            ${product?.productPrice}
                                         </p>
                                         <h2 className="text-gray-400 md:text-xs line-through font-poppins">
                                             {product.productOriginalPrice}
                                         </h2>
                                         <h2 className="text-green-600 md:text-xs font-poppins">
-                                            ${product.discount} OFF
+                                            ${product?.discount} OFF
                                         </h2>
                                     </div>
                                     <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">
                                         <p className="text-gray-600 font-roboto text-sm font-medium">
-                                            {product.subcategory?.name}
+                                            {product?.subcategory?.name}
                                         </p>
                                     </div>
                                 </div>
