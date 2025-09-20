@@ -321,7 +321,7 @@ function Products() {
     }
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col py-4">
             {/* <div className="w-full grid grid-cols-1 gap-8 h-fit relative m-auto to-red-500">
             
                      <div className="bg-gradient-to-r from-[#2C4E80] to-[#34699A]  shadow-md p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -383,10 +383,10 @@ function Products() {
 
      </div>
 */}
-            <div className="grid grid-cols-2 md:grid-cols-5 m-auto p-4">
+            {/* <div className="grid grid-cols-2 md:grid-cols-5 m-auto p-4">
                 {isShowCategory && (
                     <>
-                        {filterCategory.map((product) => (
+                        {filterCategory?.map((product) => (
                             <div
                                 key={product._id}
                                 className="grid grid-cols-1 gap-1 md:gap-3 p-4 relative rounded-lg shadow-lg"
@@ -432,7 +432,7 @@ function Products() {
                         ))}
                     </>
                 )}
-            </div>
+            </div>*/}
 
             {/* CATEGORY FILTER PRODUCTS COMPONENT SECTION END HERE*/}
 

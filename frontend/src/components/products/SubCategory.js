@@ -82,6 +82,8 @@ function SubCategory() {
         showEditSubCategoryModalHandler,
         hideEditSubCategoryModalHandler,
         handleFileChange,
+        subCategoryLoader,
+        setSubCategoryLoader,
     } = useContext(SubCategoryContext)
 
     const [showModal, setShowModal] = useState(false)
@@ -159,17 +161,19 @@ function SubCategory() {
                 </div>
                 {/* Subcategory Item Add Button End*/}
 
-                {isLoader ? (
-                    <div className="flex gap-2 flex-wrap">
-                        <Skeleton variant="rounded" width={180} height={180} />
-                        <Skeleton variant="rounded" width={180} height={180} />
-                        <Skeleton variant="rounded" width={180} height={180} />
-                        <Skeleton variant="rounded" width={180} height={180} />
-                        <Skeleton variant="rounded" width={180} height={180} />
-                        <Skeleton variant="rounded" width={180} height={180} />
-                        <Skeleton variant="rounded" width={180} height={180} />
-                    </div>
+                {subCategoryLoader ? (
+                    <Skeleton
+                        key={subCategory._id}
+                        variant="rounded"
+                        width={180}
+                        height={180}
+                    />
                 ) : (
+                    // <>
+                    //     {subCategories.length &&
+                    //         subCategories?.map((subCategory) => (
+                    //         ))}
+                    // </>
                     // <div className="w-full border p-2 flex justify-center items-center gap-4">
                     // <div className="w-full grid grid-cols-1">
                     //     <div className="grid grid-cols-4  p-2 gap-4 w-full">

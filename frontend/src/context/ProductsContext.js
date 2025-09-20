@@ -16,6 +16,8 @@ export const ProductsProvider = ({ children }) => {
 	const [editProductPrice, setEditProductPrice] = useState('')
 	const [editProductImg, setEditProductImg] = useState('')
 
+	const [productError, setProductError] = useState('')
+
 	const [imageFile, setImageFile] = useState(null)
 	const [imageUrl, setImageUrl] = useState('')
 	const [imageFileShow, setImageFileShow] = useState(null)
@@ -44,7 +46,7 @@ export const ProductsProvider = ({ children }) => {
 
 				const productsData = await products.json()
 				setIsLoading(false)
-				setProducts(productsData.newProducts)
+				setProducts(productsData?.newProducts)
 				console.log('my all products', productsData.newProducts)
 				// console.log(
 				//     'category name',
@@ -52,6 +54,7 @@ export const ProductsProvider = ({ children }) => {
 				// )
 			} catch (err) {
 				console.error('Error fetching products:', err)
+				setProductError('error to fetch products')
 			}
 		}
 
@@ -149,6 +152,8 @@ export const ProductsProvider = ({ children }) => {
 				setImageFileShow,
 				isHideHandler,
 				editProduct,
+				productError,
+				setProductError,
 			}}
 		>
 			{children}

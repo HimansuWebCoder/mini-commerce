@@ -50,7 +50,7 @@ function OneSubCategory() {
 			.then((res) => res.json())
 			.then((subcategory) => {
 				setIsLoaderOneSkeleton(false)
-				setSubCategoryProduct(subcategory.oneSubCategory.products)
+				setSubCategoryProduct(subcategory?.oneSubCategory?.products)
 				console.log('fetch one subcategory id', subcategoryId)
 				console.log('one sub category name', subcategory.oneSubCategory)
 				// setSubCategoryProducts(subcategory.oneSubCategory.products)
@@ -106,10 +106,19 @@ function OneSubCategory() {
 			</div>
 			<div className="grid grid-cols-5 gap-4 w-full">
 				{isLoaderOneSkeleton ? (
-					<Skeleton variant="rounded" width={250} height={320} />
+					<>
+						{subCategoryProduct?.length &&
+							subCategoryProduct?.map(() => (
+								<Skeleton
+									variant="rounded"
+									width={250}
+									height={320}
+								/>
+							))}
+					</>
 				) : (
 					<div className=" max-w-full">
-						{subCategoryProduct.length > 0 ? (
+						{subCategoryProduct?.length > 0 ? (
 							<div className=" w-[80rem] grid grid-cols-5 gap-4">
 								{subCategoryProduct?.map((product) => (
 									<div

@@ -64,6 +64,7 @@ function ProductCardContainer(props) {
         setImageFileShow,
         editProduct,
         isHideHandler,
+        productError,
     } = useContext(ProductsContext)
 
     const { loading = false } = props
@@ -163,7 +164,8 @@ function ProductCardContainer(props) {
                 <AddProductBtn />
             </div>
             <div className="grid  grid-cols-2 place-content-center place-items-center md:place-items-start sm:grid-cols-2 md:grid-cols-4 gap-8 w-full">
-                {products.map((product) => (
+                <p className="absolute top-0 m-auto z-10">{productError}</p>
+                {products?.map((product) => (
                     <Card
                         key={product._id}
                         sx={{
@@ -393,7 +395,7 @@ function ProductCardContainer(props) {
                                                         >
                                                             Select Category
                                                         </option>
-                                                        {categories.map(
+                                                        {categories?.map(
                                                             (category) => (
                                                                 <option
                                                                     selected
@@ -665,18 +667,18 @@ function ProductCardContainer(props) {
                                 <div className="flex w-full flex-col justify-between gap-2 items-start h-auto ">
                                     <div className="text-left line-clamp-3">
                                         <p className="text-gray-500 font-poppins">
-                                            ${product?.productDescription}
+                                            ₹{product?.productDescription}
                                         </p>
                                     </div>
                                     <div className="flex justify-center items-center gap-2">
                                         <p className="text-[#db4444] font-poppins">
-                                            ${product?.productPrice}
+                                            ₹{product?.productPrice}
                                         </p>
                                         <h2 className="text-gray-400 md:text-xs line-through font-poppins">
                                             {product.productOriginalPrice}
                                         </h2>
                                         <h2 className="text-green-600 md:text-xs font-poppins">
-                                            ${product?.discount} OFF
+                                            ₹{product?.discount} OFF
                                         </h2>
                                     </div>
                                     <div className="w-fit h-fit rounded-lg bg-gray-200 p-2">

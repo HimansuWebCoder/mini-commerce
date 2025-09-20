@@ -25,8 +25,6 @@ function Category() {
         category,
         setCategory,
         addCategories,
-        isLoader,
-        setIsLoader,
         loader,
         setLoader,
         isLoading,
@@ -60,6 +58,8 @@ function Category() {
         addLoader,
         setAddLoader,
         error,
+        isCategoryLoader,
+        setIsCategoryLoader,
     } = useContext(CategoryContext)
 
     // const [products, setProducts] = useState([])
@@ -104,56 +104,6 @@ function Category() {
     function isHideDeleteModalHandler() {
         setDeleteShowModal(false)
     }
-
-    // Fetch products
-    // useEffect(() => {
-    //     setIsLoader(true)
-    //     setTimeout(() => {
-    //         const fetchProducts = async () => {
-    //             try {
-    //                 const products = await fetch(
-    //                     'http://localhost:4000/products',
-    //                     {
-    //                         method: 'get',
-    //                         credentials: 'include',
-    //                     },
-    //                 )
-
-    //                 const productsData = await products.json()
-    //                 setIsLoader(false)
-    //                 setProducts(productsData.newProducts)
-    //                 console.log('all Products', productsData.newProducts)
-    //             } catch (err) {
-    //                 console.error('Error fetching products:', err)
-    //             }
-    //         }
-
-    //         fetchProducts()
-    //     }, 2000)
-    // }, [])
-
-    // Fetch sub categories
-    useEffect(() => {
-        setIsLoader(true)
-        setTimeout(() => {
-            const fetchSubCatgories = async () => {
-                const productSubCategory = await fetch(
-                    'http://localhost:4000/subcategories',
-                    {
-                        method: 'get',
-                        credentials: 'include',
-                    },
-                )
-
-                const subCategoryData = await productSubCategory.json()
-                setIsLoader(false)
-                setSubCategories(subCategoryData)
-                console.log('subCategories', subCategoryData)
-            }
-
-            fetchSubCatgories()
-        }, 1000)
-    }, [])
 
     return (
         <div className=" w-fit grid  py-4 grid-cols-1 gap-4 w-full h-full place-content-center place-items-center">
@@ -205,35 +155,25 @@ function Category() {
                 </div>
 
                 <div className="flex w-full gap-4 items-center justify-start [&::-webkit-scrollbar]:hidden  overflow-x-auto">
-                    {isLoader ? (
-                        <div className="flex gap-2 flex-wrap">
-                            <Skeleton
-                                variant="rounded"
-                                width={180}
-                                height={180}
-                            />
-                            <Skeleton
-                                variant="rounded"
-                                width={180}
-                                height={180}
-                            />
-                            <Skeleton
-                                variant="rounded"
-                                width={180}
-                                height={180}
-                            />
-                            <Skeleton
-                                variant="rounded"
-                                width={180}
-                                height={180}
-                            />
-                        </div>
+                    {isCategoryLoader ? (
+                        <>
+                            {categories?.length > 0 &&
+                                categories?.map((category) => (
+                                    <div className="flex gap-2 flex-wrap">
+                                        <Skeleton
+                                            variant="rounded"
+                                            width={180}
+                                            height={180}
+                                        />
+                                    </div>
+                                ))}
+                        </>
                     ) : (
                         <div className="w-full relative h-full grid grid-cols-2 md:grid-cols-7 gap-4 p-4">
                             <p className="absolute top-0 m-auto z-10">
                                 {error}
                             </p>
-                            {categories.map((category) => (
+                            {categories?.map((category) => (
                                 // <Link to={`/category/${category._id}`}>
                                 <div
                                     className="flex relative w-40 h-40 rounded-lg justify-center  items-center"

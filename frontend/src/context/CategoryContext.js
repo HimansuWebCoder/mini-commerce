@@ -45,7 +45,7 @@ export const CategoryProvider = ({ children }) => {
 	}
 
 	// loaders
-	const [isLoader, setIsLoader] = useState(false)
+	const [isCategoryLoader, setIsCategoryLoader] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 	const [loader, setLoader] = useState(false)
 	const [error, setError] = useState('')
@@ -83,11 +83,11 @@ export const CategoryProvider = ({ children }) => {
 	// }, [])
 
 	useEffect(() => {
-		setIsLoader(true)
+		setIsCategoryLoader(true)
 
 		const fetchCategories = async () => {
 			try {
-				const res = await fetch('http://localhost:4000/categries', {
+				const res = await fetch('http://localhost:4000/categories', {
 					method: 'GET',
 					credentials: 'include',
 				})
@@ -97,12 +97,12 @@ export const CategoryProvider = ({ children }) => {
 				}
 
 				const data = await res.json()
-				setCategories(data.categoriesData)
+				setCategories(data?.categoriesData)
 			} catch (err) {
 				console.error('Fetch error:', err.message)
 				setError('Something went wrong. Please try again later.')
 			} finally {
-				setIsLoader(false) // always stop loader
+				setIsCategoryLoader(false)
 			}
 		}
 
@@ -121,7 +121,7 @@ export const CategoryProvider = ({ children }) => {
 			.then((res) => res.json())
 			.then((categoryData) => {
 				// setIsLoaderSkeleton(false)
-				setOneCategory(categoryData.getOneCategory.subcategories)
+				setOneCategory(categoryData?.getOneCategory?.subcategories)
 				console.log('one sub category name', categoryData)
 				// setSubCategoryProducts(subcategory.oneSubCategory.products)
 				// window.location.reload();
@@ -333,8 +333,6 @@ export const CategoryProvider = ({ children }) => {
 				addCategories,
 				category,
 				setCategory,
-				isLoader,
-				setIsLoader,
 				loader,
 				setLoader,
 				isLoading,
@@ -369,6 +367,8 @@ export const CategoryProvider = ({ children }) => {
 				addLoader,
 				setAddLoader,
 				error,
+				isCategoryLoader,
+				setIsCategoryLoader,
 			}}
 		>
 			{children}

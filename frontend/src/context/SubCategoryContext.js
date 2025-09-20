@@ -13,6 +13,7 @@ export const SubCategoryProvider = ({ children }) => {
 	const [isLoaderSkeleton, setIsLoaderSkeleton] = useState(false)
 	const [isLoader, setIsLoader] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
+	const [subCategoryLoader, setSubCategoryLoader] = useState(false)
 
 	const [subCategoryLoading, setSubCategoryLoading] = useState(false)
 
@@ -55,23 +56,30 @@ export const SubCategoryProvider = ({ children }) => {
 
 	// Fetch sub categories
 	useEffect(() => {
-		setIsLoader(true)
-		setTimeout(() => {
-			const fetchSubCatgories = async () => {
-				const productSubCategory = await fetch(
-					'http://localhost:4000/subcategories',
-					{
-						method: 'get',
-						credentials: 'include',
-					},
+		// setIsLoader(true)
+		setSubCategoryLoader(true)
+		const fetchSubCatgories = async () => {
+			const productSubCategory = await fetch(
+				'http://localhost:4000/subcategories',
+				{
+					method: 'get',
+					credentials: 'include',
+				},
+			)
+
+			const subCategoryData = await productSubCategory.json()
+			if (!subCategoryData.ok) {
+				console.log(
+					"can't load data you may be offline or network slow, please try again later",
 				)
-
-				const subCategoryData = await productSubCategory.json()
-				setIsLoader(false)
-				setSubCategories(subCategoryData)
-				console.log('subCategories', subCategoryData)
 			}
+			setSubCategoryLoader(false)
+			// setIsLoader(false)
+			setSubCategories(subCategoryData)
+			console.log('subCategories', subCategoryData)
+		}
 
+		setTimeout(() => {
 			fetchSubCatgories()
 		}, 1000)
 	}, [])
@@ -305,6 +313,8 @@ export const SubCategoryProvider = ({ children }) => {
 				showEditSubCategoryModalHandler,
 				hideEditSubCategoryModalHandler,
 				handleFileChange,
+				subCategoryLoader,
+				setSubCategoryLoader,
 			}}
 		>
 			{children}
